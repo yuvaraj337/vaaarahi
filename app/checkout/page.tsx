@@ -1,383 +1,243 @@
 "use client";
 
 import { useState } from "react";
-import QRCode from "react-qr-code";
 import toast from "react-hot-toast";
+
 import { useCart } from "@/components/cart/CartContext";
 
+import CustomerForm from "@/components/checkout/CustomerForm";
+import OrderSummary from "@/components/checkout/OrderSummary";
+import PaymentSection from "@/components/checkout/PaymentSection";
+import PlaceOrderButton from "@/components/checkout/PlaceOrderButton";
+
 export default function CheckoutPage() {
-  const { cart, totalPrice } = useCart();
 
-  const restaurantUPI = "6302094687@fam";
-  const restaurantName = "Varahi Eat & Fit";
-
-  const upiLink = `upi://pay?pa=${restaurantUPI}&pn=${encodeURIComponent(
-    restaurantName
-  )}&am=${totalPrice}&cu=INR`;
+  const {
+    cart,
+    totalPrice,
+    increaseQuantity,
+    decreaseQuantity,
+  } = useCart();
 
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
 
-  const [paymentMethod, setPaymentMethod] = useState("COD");
-  const [paymentDone, setPaymentDone] = useState(false);
+  const [coupon, setCoupon] = useState("");
 
-  const [location, setLocation] = useState("");
-  const [loadingLocation, setLoadingLocation] = useState(false);
+  const [discount, setDiscount] = useState(0);
 
-  const getCurrentLocation = () => {
-    if (!("geolocation" in navigator)) {
-      toast.error("Geolocation is not supported.");
+  const deliveryCharge = 40;
+
+  const gst = Math.round(totalPrice * 0.05);
+
+  const grandTotal =
+    totalPrice +
+    deliveryCharge +
+    gst -
+    discount;
+
+  const [paymentMethod, setPaymentMethod] =
+    useState("COD");
+
+  const [paymentDone, setPaymentDone] =
+    useState(false);
+
+  const [placingOrder, setPlacingOrder] =
+    useState(false);
+
+  const [loadingLocation, setLoadingLocation] =
+    useState(false);
+
+  const [location, setLocation] =
+    useState("");
+
+  const phoneValid =
+    /^[6-9]\d{9}$/.test(phone);
+
+  const nameValid =
+    name.trim().length >= 3;
+
+  const addressValid =
+    address.trim().length >= 20;
+
+  function applyCoupon() {
+
+    if (
+      coupon.toUpperCase() ===
+      "WELCOME100"
+    ) {
+
+      setDiscount(100);
+
+      toast.success(
+        "Coupon Applied!"
+      );
+
+    } else {
+
+      toast.error(
+        "Invalid Coupon"
+      );
+
+    }
+
+  }
+
+  function getCurrentLocation() {
+
+    if (!navigator.geolocation) {
+
+      toast.error(
+        "Location not supported"
+      );
+
       return;
+
     }
 
     setLoadingLocation(true);
 
     navigator.geolocation.getCurrentPosition(
+
       (position) => {
-        const latitude = position.coords.latitude;
-        const longitude = position.coords.longitude;
 
-        const googleMapsLink = `https://www.google.com/maps?q=${latitude},${longitude}`;
-
-        setLocation(googleMapsLink);
-
-        toast.success("Location captured successfully!");
+        setLocation(
+          `https://www.google.com/maps?q=${position.coords.latitude},${position.coords.longitude}`
+        );
 
         setLoadingLocation(false);
+
+        toast.success(
+          "Location Captured"
+        );
+
       },
-      (error) => {
-        switch (error.code) {
-          case error.PERMISSION_DENIED:
-            toast.error("Location permission denied.");
-            break;
 
-          case error.POSITION_UNAVAILABLE:
-            toast.error("Location unavailable.");
-            break;
-
-          case error.TIMEOUT:
-            toast.error("Location request timed out.");
-            break;
-
-          default:
-            toast.error("Unknown location error.");
-        }
+      () => {
 
         setLoadingLocation(false);
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 0,
+
+        toast.error(
+          "Permission Denied"
+        );
+
       }
+
     );
-  };
+
+  }
+
+  const upiLink =
+    `upi://pay?pa=6302094687@ybl&pn=Varahi Eat & Fit&am=${grandTotal}`;
 
   return (
-    <main className="min-h-screen bg-[#0F0F10] text-white pt-32 pb-20 px-6">
+
+    <main className="min-h-screen bg-[#0F0F10] pt-36 pb-20 px-6">
 
       <div className="max-w-7xl mx-auto">
 
-        <h1 className="text-5xl font-bold mb-12">
+        <h1 className="text-5xl font-bold text-center text-white mb-16">
+
           Checkout
+
         </h1>
 
         <div className="grid lg:grid-cols-2 gap-10">
 
-          {/* Customer Details */}
+          <CustomerForm
 
-          <div className="bg-[#171717] rounded-3xl p-8">
+            name={name}
+            phone={phone}
+            address={address}
 
-            <h2 className="text-2xl font-bold mb-8">
-              Customer Details
-            </h2>
+            setName={setName}
+            setPhone={setPhone}
+            setAddress={setAddress}
 
-            <div className="space-y-5">
+            phoneValid={phoneValid}
+            nameValid={nameValid}
+            addressValid={addressValid}
 
-              <input
-                type="text"
-                placeholder="Full Name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="w-full rounded-xl bg-[#252525] p-4 outline-none"
-              />
+            loadingLocation={loadingLocation}
+            location={location}
 
-              <input
-                type="tel"
-                placeholder="Phone Number"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                className="w-full rounded-xl bg-[#252525] p-4 outline-none"
-              />
+            getCurrentLocation={getCurrentLocation}
 
-              <textarea
-                placeholder="Delivery Address"
-                rows={5}
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
-                className="w-full rounded-xl bg-[#252525] p-4 outline-none"
-              />
+          />
 
-              <button
-                type="button"
-                onClick={getCurrentLocation}
-                className="bg-blue-600 hover:bg-blue-700 px-5 py-3 rounded-xl font-semibold w-full"
-              >
-                {loadingLocation
-                  ? "Getting Location..."
-                  : "📍 Use My Current Location"}
-              </button>
+          <OrderSummary
 
-              {location && (
-                <a
-                  href={location}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-green-400 underline block"
-                >
-                  ✅ View Captured Location
-                </a>
-              )}
+            cart={cart}
 
-            </div>
+            totalPrice={totalPrice}
 
-          </div>
-                    {/* Order Summary */}
+            deliveryCharge={deliveryCharge}
 
-          <div className="bg-[#171717] rounded-3xl p-8">
+            gst={gst}
 
-            <h2 className="text-2xl font-bold mb-8">
-              Order Summary
-            </h2>
+            discount={discount}
 
-            <div className="space-y-5">
+            grandTotal={grandTotal}
 
-              {cart.length === 0 ? (
+            coupon={coupon}
 
-                <p className="text-white/50">
-                  Your cart is empty.
-                </p>
+            setCoupon={setCoupon}
 
-              ) : (
+            applyCoupon={applyCoupon}
 
-                cart.map((item) => (
+            increaseQuantity={increaseQuantity}
 
-                  <div
-                    key={item.id}
-                    className="flex justify-between items-center border-b border-white/10 pb-4"
-                  >
+            decreaseQuantity={decreaseQuantity}
 
-                    <div className="flex items-center gap-4">
-
-                      <img
-                        src={item.image}
-                        alt={item.name}
-                        className="w-16 h-16 rounded-xl object-cover"
-                      />
-
-                      <div>
-
-                        <h3 className="font-semibold">
-                          {item.name}
-                        </h3>
-
-                        <p className="text-white/50 text-sm">
-                          Qty : {item.quantity}
-                        </p>
-
-                      </div>
-
-                    </div>
-
-                    <div className="font-bold">
-                      ₹{item.price * item.quantity}
-                    </div>
-
-                  </div>
-
-                ))
-
-              )}
-
-            </div>
-
-            <div className="flex justify-between mt-10 text-2xl font-bold border-t border-white/10 pt-6">
-
-              <span>Total</span>
-
-              <span>₹{totalPrice}</span>
-
-            </div>
-
-          </div>
+          />
 
         </div>
 
-        {/* Payment Section */}
+        <PaymentSection
 
-        <div className="mt-10 bg-[#171717] rounded-3xl p-8">
+          paymentMethod={paymentMethod}
 
-          <h2 className="text-2xl font-bold mb-8">
-            Payment Method
-          </h2>
+          setPaymentMethod={setPaymentMethod}
 
-          <div className="space-y-5">
+          paymentDone={paymentDone}
 
-            <label className="flex items-center gap-3 cursor-pointer">
+          setPaymentDone={setPaymentDone}
 
-              <input
-                type="radio"
-                checked={paymentMethod === "COD"}
-                onChange={() => setPaymentMethod("COD")}
-              />
+          grandTotal={grandTotal}
 
-              Cash On Delivery
+          upiLink={upiLink}
 
-            </label>
+        />
 
-            <label className="flex items-center gap-3 cursor-pointer">
+        <PlaceOrderButton
 
-              <input
-                type="radio"
-                checked={paymentMethod === "ONLINE"}
-                onChange={() => setPaymentMethod("ONLINE")}
-              />
+          cart={cart}
 
-              Online Payment
+          name={name}
+          phone={phone}
+          address={address}
+          location={location}
 
-            </label>
+          phoneValid={phoneValid}
+          nameValid={nameValid}
+          addressValid={addressValid}
 
-          </div>
+          paymentMethod={paymentMethod}
+          paymentDone={paymentDone}
 
-          {paymentMethod === "ONLINE" && (
+          grandTotal={grandTotal}
 
-            <div className="mt-8 rounded-2xl border border-dashed border-white/20 p-8 text-center">
+          placingOrder={placingOrder}
 
-              <div className="bg-white p-4 rounded-xl inline-block">
+          setPlacingOrder={setPlacingOrder}
 
-                <QRCode
-                  value={upiLink}
-                  size={180}
-                />
-
-              </div>
-
-              <p className="text-white/60 mt-5">
-                Scan using PhonePe, Google Pay, Paytm or any UPI App.
-              </p>
-
-              <p className="text-green-400 mt-3 font-semibold">
-                Amount : ₹{totalPrice}
-              </p>
-
-              <a
-                href={upiLink}
-                className="mt-5 block bg-green-600 hover:bg-green-700 px-6 py-3 rounded-xl font-semibold"
-              >
-                📲 Pay using UPI App
-              </a>
-
-              <button
-                onClick={() => {
-                  setPaymentDone(true);
-                  toast.success("Payment marked as completed.");
-                }}
-                className="mt-4 w-full bg-blue-600 hover:bg-blue-700 py-3 rounded-xl font-semibold"
-              >
-                ✅ I've Paid
-              </button>
-
-              {paymentDone && (
-
-                <p className="text-green-400 mt-4">
-                  Payment marked as completed.
-                </p>
-
-              )}
-
-            </div>
-
-          )}
-                    <button
-            onClick={() => {
-              if (!name || !phone || !address) {
-                toast.error("Please fill all the details.");
-                return;
-              }
-
-              if (cart.length === 0) {
-                toast.error("Your cart is empty.");
-                return;
-              }
-
-              if (paymentMethod === "ONLINE" && !paymentDone) {
-                toast.error("Please complete payment first.");
-                return;
-              }
-
-              const orderId = `VEF-${Date.now().toString().slice(-6)}`;
-
-              const items = cart
-                .map(
-                  (item) =>
-                    `• ${item.name} ×${item.quantity} = ₹${
-                      item.price * item.quantity
-                    }`
-                )
-                .join("\n");
-
-              const message = `🍽️ *New Order*
-
-🆔 Order ID:
-${orderId}
-
-👤 Name:
-${name}
-
-📞 Phone:
-${phone}
-
-🏠 Address:
-${address}
-
-📍 Location:
-${location || "Not Shared"}
-
-🛒 Items:
-${items}
-
-💰 Total:
-₹${totalPrice}
-
-💳 Payment:
-${
-  paymentMethod === "COD"
-    ? "Cash On Delivery"
-    : "Online Payment (Customer marked as Paid)"
-}`;
-
-              const whatsappUrl = `https://wa.me/916302094687?text=${encodeURIComponent(
-                message
-              )}`;
-
-              window.open(whatsappUrl, "_blank");
-
-              toast.success("Order placed successfully!");
-
-              setTimeout(() => {
-                window.location.href = `/order-placed?id=${orderId}`;
-              }, 800);
-            }}
-            className="mt-10 w-full bg-[#E63946] hover:bg-red-600 rounded-2xl py-4 text-lg font-bold transition"
-          >
-            Place Order
-          </button>
-
-        </div>
+        />
 
       </div>
 
     </main>
+
   );
+
 }
