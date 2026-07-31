@@ -62,12 +62,15 @@ export default function Navbar() {
 
               <CartButton />
 
-              <a
-                href="#menu"
-                className="bg-[#E63946] hover:bg-red-600 text-white px-6 py-3 rounded-full font-semibold transition"
-              >
-                Order Now
-              </a>
+              <button
+  onClick={() => {
+    const cartButton = document.getElementById("cart-button");
+    cartButton?.click();
+  }}
+  className="bg-[#E63946] hover:bg-red-600 text-white px-6 py-3 rounded-full font-semibold transition"
+>
+  Order Now
+</button>
 
             </div>
 

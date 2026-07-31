@@ -19,6 +19,22 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  images: {
+  remotePatterns: [
+    {
+      protocol: "https",
+      hostname: "picsum.photos",
+    },
+    {
+      protocol: "https",
+      hostname: "images.unsplash.com",
+    },
+    {
+      protocol: "https",
+      hostname: "encrypted-tbn0.gstatic.com",
+    },
+  ],
+},
 
   transpilePackages: ["motion"],
 

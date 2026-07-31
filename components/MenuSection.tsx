@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import Image from "next/image";
+import toast from "react-hot-toast";
 import {
   ShoppingCart,
   Heart,
@@ -52,18 +53,18 @@ const menuItems = [
     isVegetarian: true,
   },
   {
-    id: 3,
-    category: "Protein Shakes",
-    name: "Whey Protein",
-    desc: "Gold Standard & MB Biozyme",
-    price: 220,
-    image:
-      "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=800&q=80",
-    rating: 4.7,
-    calories: 250,
-    protein: "25g",
-    isVegetarian: true,
-  },
+  id: 3,
+  category: "Protein Shakes",
+  name: "Whey Protein",
+  desc: "Gold Standard & MB Biozyme",
+  price: 220,
+  image:
+    "/varahi-eat-fit/protein.jpg",
+  rating: 4.7,
+  calories: 250,
+  protein: "25g",
+  isVegetarian: true,
+},
   {
     id: 4,
     category: "Soups",
@@ -117,24 +118,25 @@ const menuItems = [
     isVegetarian: true,
   },
   {
-    id: 8,
-    category: "Protein Shakes",
-    name: "Herbal Tea",
-    desc: "Refresh • Restore • Relax",
-    price: 120,
-    image:
-      "https://images.unsplash.com/photo-1544787219-7f47ccb76574?auto=format&fit=crop&w=800&q=80",
-    rating: 4.8,
-    calories: 45,
-    protein: "0g",
-    isVegetarian: true,
-  },
+  id: 8,
+  category: "Protein Shakes",
+  name: "Herbal Tea",
+  desc: "Refresh • Restore •Relax",
+  price: 120,
+  image:
+    "https://images.unsplash.com/photo-1544787219-7f47ccb76574?auto=format&fit=crop&w=800&q=80",
+  rating: 4.8,
+  calories: 45,
+  protein: "0g",
+  isVegetarian: true,
+},
 ];
 
 export default function MenuSection() {
   const { addToCart } = useCart();
 
   const [activeCategory, setActiveCategory] = useState("All");
+  const [favorites, setFavorites] = useState<number[]>([]);
 
   const filteredItems = menuItems.filter((item) =>
     activeCategory === "All"
@@ -217,9 +219,26 @@ export default function MenuSection() {
   >
     {/* Favorite Button */}
     <div className="absolute top-6 right-6 z-20">
-      <button className="w-9 h-9 rounded-full bg-black/60 backdrop-blur-md flex items-center justify-center text-white/70 hover:text-[#E63946] transition-all">
-        <Heart className="w-4 h-4" />
-      </button>
+      <button
+  onClick={() => {
+    if (favorites.includes(item.id)) {
+      setFavorites(favorites.filter((id) => id !== item.id));
+      toast.success("Removed from favourites");
+    } else {
+      setFavorites([...favorites, item.id]);
+      toast.success("Added to favourites");
+    }
+  }}
+  className="w-9 h-9 rounded-full bg-black/60 backdrop-blur-md flex items-center justify-center transition-all duration-300"
+>
+  <Heart
+    className={`w-4 h-4 transition-all ${
+      favorites.includes(item.id)
+        ? "fill-red-500 text-red-500"
+        : "text-white/70"
+    }`}
+  />
+</button>
     </div>
 
     {/* Veg Badge */}

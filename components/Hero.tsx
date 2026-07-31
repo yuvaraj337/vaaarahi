@@ -12,7 +12,6 @@ export default function Hero() {
 
       {/* 2. Soft, luxurious brand red glow behind the main text & image */}
       <div className="absolute top-1/2 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#FF4D57] rounded-full blur-[150px] opacity-[0.07] pointer-events-none z-0" />
-      <div className="absolute top-1/2 right-1/4 translate-x-1/4 -translate-y-1/2 w-[800px] h-[800px] bg-[#FF4D57] rounded-full blur-[180px] opacity-[0.05] pointer-events-none z-0" />
 
       {/* 3. Subtle noise texture for a premium matte finish */}
       <div 
@@ -75,13 +74,26 @@ export default function Hero() {
             transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
             className="flex flex-col sm:flex-row items-center gap-5 w-full sm:w-auto"
           >
-            <button className="w-full sm:w-auto bg-[#FF4D57] text-white px-10 py-4 lg:py-5 rounded-full text-[13px] lg:text-[14px] font-bold uppercase tracking-[0.15em] transition-all duration-300 hover:bg-[#ff333f] hover:shadow-[0_10px_30px_rgba(255,77,87,0.3)] hover:-translate-y-0.5 active:scale-95 flex items-center justify-center gap-3">
-              Explore Menu
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-            </button>
-            <button className="w-full sm:w-auto bg-transparent border border-white/20 text-white px-10 py-4 lg:py-5 rounded-full text-[13px] lg:text-[14px] font-bold uppercase tracking-[0.15em] transition-all duration-300 hover:bg-white/5 hover:border-white/40 hover:-translate-y-0.5 active:scale-95">
-              Book A Table
-            </button>
+            <a
+               href="#menu"
+               className="w-full sm:w-auto bg-[#FF4D57] text-white px-10 py-4 lg:py-5 rounded-full text-[13px] lg:text-[14px] font-bold uppercase tracking-[0.15em] transition-all duration-300 hover:bg-[#ff333f] hover:shadow-[0_10px_30px_rgba(255,77,87,0.3)] hover:-translate-y-0.5 active:scale-95 flex items-center justify-center gap-3"
+               >            
+               Explore Menu
+             
+               <svg
+                 width="16"
+                 height="16"
+                 viewBox="0 0 24 24"
+                 fill="none"
+                 stroke="currentColor"
+                 strokeWidth="2.5"
+                 strokeLinecap="round"
+                 strokeLinejoin="round"
+               >
+                 <path d="M5 12h14" />
+                 <path d="m12 5 7 7-7 7" />
+               </svg>
+              </a>
           </motion.div>
 
           {/* Review Section */}

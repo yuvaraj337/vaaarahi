@@ -12,7 +12,8 @@ export default function CartButton() {
   return (
     <>
       <button
-        onClick={() => setOpen(true)}
+  id="cart-button"
+  onClick={() => setOpen(true)}
         className="relative flex items-center justify-center w-11 h-11 rounded-full bg-[#E63946] hover:bg-[#d62839] transition-all"
       >
         <ShoppingCart className="w-5 h-5 text-white" />
