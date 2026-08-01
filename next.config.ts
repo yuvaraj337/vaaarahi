@@ -1,33 +1,26 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  reactStrictMode: true,
-
-  typescript: {
-    ignoreBuildErrors: false,
-  },
-
   images: {
     remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "picsum.photos",
-      },
       {
         protocol: "https",
         hostname: "images.unsplash.com",
       },
       {
         protocol: "https",
-        hostname: "encrypted-tbn0.gstatic.com",
+        hostname: "plus.unsplash.com",
+      },
+      {
+        protocol: "https",
+        hostname: "images.pexels.com",
+      },
+      {
+        protocol: "https",
+        hostname: "cdn.pixabay.com",
       },
     ],
   },
-
-  transpilePackages: ["motion"],
-
-  // Required because Next.js 16 uses Turbopack by default
-  turbopack: {},
 };
 
 export default nextConfig;
