@@ -146,9 +146,9 @@ export default function MenuSection() {
 
   return (
     <section
-      id="menu"
-      className="py-24 bg-[#0F0F10] border-t border-white/5 relative"
-    >
+  id="menu"
+  className="scroll-mt-28 py-24 bg-[#0F0F10] border-t border-white/5 relative"
+>
       <div className="absolute top-1/2 right-0 -translate-y-1/2 w-[600px] h-[600px] bg-[#E63946]/5 rounded-full blur-[150px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
