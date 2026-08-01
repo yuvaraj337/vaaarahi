@@ -33,7 +33,7 @@ export const menuItems = [
     category: "Salads",
     name: "Lean Chicken Salad",
     price: 50,
-    image: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1200&q=80",
+    image: "https://plus.unsplash.com/premium_photo-1664640733581-a9175477cd11?w=1000&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8bGVhbiUyMGNoaWNrZW4lMjBzYWxhZHxlbnwwfHwwfHx8MA%3D%3D",
     description: "High protein chicken salad",
     rating: 4.9,
     calories: 260,
@@ -47,7 +47,7 @@ export const menuItems = [
     name: "Fruit Salad",
     price: 65,
     image:
-"https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1200&q=80",
+"https://images.unsplash.com/photo-1490474418585-ba9bad8fd0ea?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8ZnJ1aXQlMjBzYWxhZHxlbnwwfHwwfHx8MA%3D%3D",
     description: "Seasonal fresh fruits",
     rating: 4.7,
     calories: 150,
@@ -61,7 +61,7 @@ export const menuItems = [
     name: "Veg Salad",
     price: 65,
     image:
-"https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1200&q=80",
+"https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dmVnJTIwc2FsYWR8ZW58MHx8MHx8fDA%3D",
     description: "Garden fresh vegetables",
     rating: 4.8,
     calories: 170,
@@ -75,7 +75,7 @@ export const menuItems = [
     name: "Corn Salad",
     price: 85,
     image:
-"https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1200&q=80",
+"https://images.unsplash.com/photo-1468777675496-5782faaea55b?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Y29ybiUyMHNhbGFkfGVufDB8fDB8fHww",
     description: "Sweet corn salad",
     rating: 4.7,
     calories: 220,
@@ -89,7 +89,7 @@ export const menuItems = [
     name: "Paneer Salad",
     price: 85,
     image: 
-"https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1200&q=80",
+"https://images.unsplash.com/photo-1572449043416-55f4685c9bb7?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     description: "Fresh paneer cubes",
     rating: 4.9,
     calories: 280,
@@ -103,7 +103,7 @@ export const menuItems = [
     name: "Egg Salad",
     price: 85,
     image: 
-"https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1200&q=80",
+"https://images.unsplash.com/photo-1482049016688-2d3e1b311543?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8ZWdnJTIwc2FsYWR8ZW58MHx8MHx8fDA%3D",
     description: "Boiled egg protein salad",
     rating: 4.8,
     calories: 240,
@@ -117,7 +117,7 @@ export const menuItems = [
     name: "Chicken Protein Salad",
     price: 95,
     image: 
-"https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1200&q=80",
+"https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dmVnJTIwc2FsYWR8ZW58MHx8MHx8fDA%3D",
     description: "Premium protein salad",
     rating: 5.0,
     calories: 310,
@@ -148,7 +148,7 @@ export const menuItems = [
     name: "Egg Roll",
     price: 90,
     image:
-"https://images.unsplash.com/photo-1626700051175-6818013e1d4f?auto=format&fit=crop&w=1200&q=80",
+"https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dmVnJTIwc2FsYWR8ZW58MHx8MHx8fDA%3D",
     description: "Protein packed egg roll",
     rating: 4.8,
     calories: 340,
@@ -162,7 +162,7 @@ export const menuItems = [
     name: "Chicken Roll",
     price: 99,
     image:
-"https://images.unsplash.com/photo-1626700051175-6818013e1d4f?auto=format&fit=crop&w=1200&q=80",
+"https://images.unsplash.com/photo-1719282431565-3b30bb7d2658?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     description: "Healthy chicken roll",
     rating: 4.9,
     calories: 390,
