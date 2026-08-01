@@ -162,8 +162,8 @@ export default function MenuSection() {
       </h3>
 
       <p className="text-white/50 text-sm mb-5">
-        {item.desc}
-      </p>
+  {item.description}
+</p>
 
       {/* Nutrition */}
       <div className="flex gap-3 mb-6">
