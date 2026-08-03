@@ -36,125 +36,62 @@ export default function AIWindow({
     },
   ]);
 
-  function getReply(question: string) {
-    const q = question.toLowerCase();
+  
+  async function sendMessage() {
 
-    if (
-      q.includes("protein") ||
-      q.includes("gym") ||
-      q.includes("muscle")
-    ) {
-      return `💪 High Protein Meals
+  if (!input.trim()) return;
 
-🥇 Lean Chicken Roll — 32g Protein
+  const question = input;
 
-🥈 Whey Protein Shake — 25g Protein
+  const userMessage: Message = {
+    sender: "user",
+    text: question,
+  };
 
-🥉 Pumpkin Cutlets — 15g Protein
+  setMessages((prev) => [
+    ...prev,
+    userMessage,
+  ]);
 
-🥚 Boiled Eggs — 12g Protein`;
-    }
+  setInput("");
 
-    if (
-      q.includes("veg") ||
-      q.includes("vegetarian")
-    ) {
-      return `🥗 Vegetarian Meals
+  try {
 
-• Fresh Sprout Salad
+    const response = await fetch("/api/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        message: question,
+      }),
+    });
 
-• Pumpkin Cutlets
-
-• Whey Protein
-
-• Fresh Soup
-
-• Herbal Tea`;
-    }
-
-    if (
-      q.includes("order") ||
-      q.includes("checkout")
-    ) {
-      return `📦 How to Order
-
-1. Browse Menu
-
-2. Click Add to Cart
-
-3. Open Shopping Cart
-
-4. Proceed to Checkout
-
-5. Enter Delivery Details
-
-6. Choose Payment
-
-7. Place Order`;
-    }
-
-    if (
-      q.includes("payment") ||
-      q.includes("upi") ||
-      q.includes("phonepe") ||
-      q.includes("gpay") ||
-      q.includes("google pay")
-    ) {
-      return `💳 Payment Options
-
-${restaurantInfo.payment.join("\n")}`;
-    }
-
-    if (
-      q.includes("delivery")
-    ) {
-      return `🚚 Delivery Time
-
-${restaurantInfo.delivery}`;
-    }
-
-    if (
-      q.includes("phone") ||
-      q.includes("contact")
-    ) {
-      return `📞 Contact
-
-${restaurantInfo.phone}`;
-    }
-
-    if (
-      q.includes("hello") ||
-      q.includes("hi") ||
-      q.includes("hey")
-    ) {
-      return "👋 Hello! Welcome to Varahi Eat & Fit. How can I help you today?";
-    }
-
-    return "😊 Sorry, I couldn't understand that.\n\nTry asking:\n\n• High protein meals\n• Vegetarian food\n• How to order\n• Payment options\n• Delivery";
-  }
-
-  function sendMessage() {
-
-    if (!input.trim()) return;
-
-    const userMessage: Message = {
-      sender: "user",
-      text: input,
-    };
+    const data = await response.json();
 
     const botMessage: Message = {
       sender: "bot",
-      text: getReply(input),
+      text: data.reply,
     };
 
     setMessages((prev) => [
       ...prev,
-      userMessage,
       botMessage,
     ]);
 
-    setInput("");
+  } catch {
+
+    setMessages((prev) => [
+      ...prev,
+      {
+        sender: "bot",
+        text: "❌ Sorry, I couldn't contact the AI server.",
+      },
+    ]);
+
   }
+
+}
 
   return (
     <AnimatePresence>

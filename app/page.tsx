@@ -7,7 +7,6 @@ import GallerySection from "@/components/GallerySection";
 import Testimonials from "@/components/Testimonials";
 import CtaSection from "@/components/CtaSection";
 import Footer from "@/components/Footer";
-import AIChat from "@/components/AIChat/AIChat";
 import FloatingContact from "@/components/FloatingContact";
 
 export default function Home() {
@@ -22,7 +21,6 @@ export default function Home() {
       <Testimonials />
       <CtaSection />
       <Footer />
-      <AIChat />
       <FloatingContact />
       
     </>
