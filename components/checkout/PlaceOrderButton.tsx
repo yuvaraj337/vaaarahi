@@ -2,6 +2,7 @@
 
 import { Loader2, ShieldCheck } from "lucide-react";
 import toast from "react-hot-toast";
+import { addOrder } from "@/lib/orderService";
 
 interface CartItem {
   id: number;
@@ -52,7 +53,7 @@ export default function PlaceOrderButton({
   setPlacingOrder,
 }: Props) {
 
-  function placeOrder() {
+   async function placeOrder() {
 
     if (!nameValid) {
       toast.error("Enter valid name");
@@ -99,6 +100,7 @@ export default function PlaceOrderButton({
 
     const message = `🍽️ Varahi Eat & Fit
 
+
 🆔 Order ID : ${orderId}
 
 👤 ${name}
@@ -118,6 +120,36 @@ ${items}
 💰 Grand Total : ₹${grandTotal}
 
 💳 Payment : ${paymentMethod}`;
+await addOrder({
+  orderId,
+
+  customerName: name,
+
+  phone,
+
+  address,
+
+  location,
+
+  paymentMethod,
+
+  paymentStatus:
+    paymentMethod === "COD"
+      ? "Pending"
+      : "Paid",
+
+  orderStatus: "Pending",
+
+  total: grandTotal,
+
+  createdAt: Date.now(),
+
+  items: cart.map((item) => ({
+    name: item.name,
+    price: item.price,
+    quantity: item.quantity,
+  })),
+});
 
     setTimeout(() => {
 

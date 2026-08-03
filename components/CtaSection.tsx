@@ -1,7 +1,6 @@
 "use client";
 
 import { motion } from "motion/react";
-import Image from "next/image";
 import { ArrowRight, ShoppingCart } from "lucide-react";
 
 export default function CtaSection() {
@@ -16,22 +15,9 @@ export default function CtaSection() {
   };
 
   return (
-    <section className="relative py-32 bg-[#0a0a0a] overflow-hidden">
-      {/* Background */}
-      <div className="absolute inset-0 z-0">
-        <Image
-          src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=2000&q=80"
-          alt="Healthy Restaurant"
-          fill
-          className="object-cover opacity-30"
-          referrerPolicy="no-referrer"
-        />
-
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/80 to-[#0a0a0a]" />
-      </div>
-
+    <section className="relative py-32 bg-transparent overflow-hidden">
       {/* Glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[80vw] sm:w-[600px] sm:h-[600px] bg-[#d91f27]/10 rounded-full blur-[120px] pointer-events-none z-0" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[80vw] sm:w-[600px] sm:h-[600px] bg-[#d91f27]/[0.06] rounded-full blur-[140px] pointer-events-none z-0" />
 
       <div className="max-w-6xl mx-auto px-6 relative z-10">
         <motion.div

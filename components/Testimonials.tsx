@@ -41,7 +41,7 @@ export default function Testimonials() {
   const marqueeItems = [...testimonials, ...testimonials];
 
   return (
-    <section className="py-32 bg-[#0a0a0a] relative overflow-hidden">
+    <section className="py-32 bg-transparent relative overflow-hidden">
       {/* Background glow effects */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60vw] h-[60vw] bg-[#d91f27]/5 rounded-full blur-[150px] pointer-events-none z-0" />
       

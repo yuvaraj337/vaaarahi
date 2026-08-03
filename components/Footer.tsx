@@ -18,7 +18,7 @@ const TwitterIcon = () => (
 
 export default function Footer() {
   return (
-    <footer id="contact" className="relative bg-[#0a0a0a] pt-32 pb-10 overflow-hidden">
+    <footer id="contact" className="relative bg-transparent pt-32 pb-10 overflow-hidden">
       {/* Background Gradients */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-[1200px] h-[1px] bg-gradient-to-r from-transparent via-[#d91f27]/30 to-transparent" />
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[80vw] h-[80vw] sm:w-[800px] sm:h-[800px] bg-[#d91f27]/5 rounded-full blur-[150px] pointer-events-none z-0 translate-y-[-50%]" />
@@ -113,7 +113,7 @@ export default function Footer() {
         
         {/* Elegant Divider & Opening Hours */}
         <div className="border-t border-white/10 py-12 relative">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 px-6 bg-[#0a0a0a]">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 px-6 bg-[#050505]/80 backdrop-blur-sm">
             <h4 className="font-playfair text-xl font-bold text-white uppercase tracking-widest text-[13px] text-center">Opening Hours</h4>
           </div>
           

@@ -5,7 +5,7 @@ export default function OrderPlacedPage() {
   return (
     <Suspense
       fallback={
-        <main className="min-h-screen bg-[#0F0F10] flex items-center justify-center text-white">
+        <main className="min-h-screen bg-transparent flex items-center justify-center text-white">
           Loading...
         </main>
       }

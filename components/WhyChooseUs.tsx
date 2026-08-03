@@ -20,7 +20,7 @@ const highlights = [
 
 export default function WhyChooseUs() {
   return (
-    <section id="about" className="py-24 bg-[#0a0a0a] relative overflow-hidden">
+    <section id="about" className="py-24 bg-transparent relative overflow-hidden">
       {/* Soft background gradients */}
       <div className="absolute top-1/4 -left-[10%] w-[40vw] h-[40vw] bg-[#d91f27]/5 rounded-full blur-[120px] pointer-events-none z-0" />
       <div className="absolute bottom-1/4 -right-[10%] w-[30vw] h-[30vw] bg-white/5 rounded-full blur-[100px] pointer-events-none z-0" />

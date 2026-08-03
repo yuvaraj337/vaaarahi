@@ -20,7 +20,7 @@ export default function GallerySection() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   return (
-    <section id="gallery" className="py-32 bg-[#0a0a0a] relative overflow-hidden">
+    <section id="gallery" className="py-32 bg-transparent relative overflow-hidden">
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[80vw] bg-white/[0.02] rounded-full blur-[150px] pointer-events-none z-0" />
       
       <div className="max-w-7xl mx-auto px-6 relative z-10">

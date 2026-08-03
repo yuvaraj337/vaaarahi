@@ -63,7 +63,7 @@ const categories = [
 
 export default function FeaturedCategories() {
   return (
-    <section className="py-24 bg-[#0F0F10]">
+    <section className="py-24 bg-transparent">
 
       <div className="max-w-7xl mx-auto px-6">
 

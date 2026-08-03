@@ -126,7 +126,7 @@ export default function CheckoutPage() {
 
       <CheckoutNavbar />
 
-      <main className="relative min-h-screen bg-[#0B0B0B] overflow-hidden">
+      <main className="relative min-h-screen bg-transparent overflow-hidden">
 
         {/* Background Glow */}
 

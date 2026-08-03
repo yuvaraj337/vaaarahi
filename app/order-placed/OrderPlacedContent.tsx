@@ -7,7 +7,7 @@ export default function OrderPlacedContent() {
   const orderId = params.get("id");
 
   return (
-    <main className="min-h-screen bg-[#0F0F10] flex items-center justify-center px-6">
+    <main className="min-h-screen bg-transparent flex items-center justify-center px-6">
 
       <div className="bg-[#171717] rounded-3xl p-10 max-w-lg w-full text-center">
 

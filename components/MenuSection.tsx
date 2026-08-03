@@ -16,7 +16,8 @@ import {
 
 import { cn } from "@/lib/utils";
 import { useCart } from "@/components/cart/CartContext";
-import { categories, menuItems } from "@/data/menu";
+import { getMenu } from "@/lib/menuService";
+import { MenuItem } from "@/types/menu";
 
 export default function MenuSection() {
   const { addToCart } = useCart();
@@ -24,10 +25,16 @@ export default function MenuSection() {
   const [activeCategory, setActiveCategory] =
     useState("All");
 
-  const [favorites, setFavorites] = useState<number[]>(
-    []
-  );
+ const [favorites, setFavorites] = useState<string[]>([]);
 
+const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+
+const categories = [
+  "All",
+  ...Array.from(
+    new Set(menuItems.map((item) => item.category))
+  ),
+];
   useEffect(() => {
     const handleCategoryChange = (
       event: Event
@@ -50,17 +57,28 @@ export default function MenuSection() {
       );
     };
   }, []);
+  useEffect(() => {
+  async function loadMenu() {
+    const data = await getMenu();
 
-  const filteredItems = menuItems.filter((item) =>
-    activeCategory === "All"
-      ? true
-      : item.category === activeCategory
-  );
+    console.log(data);
+
+    setMenuItems(data);
+  }
+
+  loadMenu();
+}, []);
+
+  const filteredItems = menuItems.filter((item) => {
+  if (activeCategory === "All") return true;
+
+  return item.category === activeCategory;
+});
 
   return (
     <section
       id="menu"
-      className="py-24 bg-[#0F0F10] border-t border-white/5 relative"
+      className="py-24 bg-transparent border-t border-white/5 relative"
     >
       <div className="absolute top-1/2 right-0 -translate-y-1/2 w-[650px] h-[650px] bg-[#E63946]/5 rounded-full blur-[180px] pointer-events-none" />
 
@@ -141,7 +159,7 @@ export default function MenuSection() {
             {filteredItems.map((item) => (
 
               <motion.div
-                key={item.id}
+                key={item.id ?? item.name}
                 layout
                 initial={{
                   opacity: 0,
@@ -169,12 +187,12 @@ export default function MenuSection() {
                   <button
                     onClick={() => {
 
-                      if (favorites.includes(item.id)) {
+                      if (item.id && favorites.includes(item.id)) {
 
                         setFavorites(
                           favorites.filter(
-                            (id) => id !== item.id
-                          )
+  (id) => id !== item.id
+)
                         );
 
                         toast.success(
@@ -183,10 +201,12 @@ export default function MenuSection() {
 
                       } else {
 
-                        setFavorites([
-                          ...favorites,
-                          item.id,
-                        ]);
+                        if (item.id) {
+  setFavorites([
+    ...favorites,
+    item.id,
+  ]);
+}
 
                         toast.success(
                           "Added to favourites"
@@ -200,7 +220,9 @@ export default function MenuSection() {
 
                     <Heart
                       className={`w-5 h-5 transition ${
-                        favorites.includes(item.id)
+                        item.id
+  ? favorites.includes(item.id)
+  : false
                           ? "fill-red-500 text-red-500"
                           : "text-white/70"
                       }`}
@@ -307,11 +329,11 @@ export default function MenuSection() {
                     <button
                       onClick={() => {
                         addToCart({
-                          id: item.id,
-                          name: item.name,
-                          price: item.price,
-                          image: item.image,
-                        });
+  id: Number(item.id ?? 0),
+  name: item.name,
+  price: item.price,
+  image: item.image,
+});
 
                         toast.success(
                           `${item.name} added to cart`
