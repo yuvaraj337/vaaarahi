@@ -2,6 +2,7 @@
 
 import QRCode from "react-qr-code";
 import { CreditCard, ShieldCheck, CheckCircle2 } from "lucide-react";
+import toast from "react-hot-toast";
 
 interface Props {
   paymentMethod: string;
@@ -55,6 +56,29 @@ export default function PaymentSection({
       subtitle: "Any App",
     },
   ];
+  function openUPI() {
+  let appOpened = false;
+
+  const handleVisibility = () => {
+    if (document.hidden) {
+      appOpened = true;
+    }
+  };
+
+  document.addEventListener("visibilitychange", handleVisibility);
+
+  window.location.href = upiLink;
+
+  setTimeout(() => {
+    document.removeEventListener("visibilitychange", handleVisibility);
+
+    if (!appOpened) {
+      toast.error(
+  "No UPI app found. Scan the QR code above or choose Cash on Delivery."
+);
+    }
+  }, 2000);
+}
 
   return (
     <div className="bg-[#171717] rounded-3xl border border-white/10 p-8 mt-10">
@@ -131,13 +155,13 @@ export default function PaymentSection({
             ₹{grandTotal}
 
           </div>
-
-          <a
-            href={upiLink}
-            className="inline-block mt-8 bg-green-600 hover:bg-green-700 transition rounded-2xl px-10 py-4 text-white font-bold"
-          >
-            Open UPI App
-          </a>
+          
+          <button
+  onClick={openUPI}
+  className="inline-block mt-8 bg-green-600 hover:bg-green-700 transition rounded-2xl px-10 py-4 text-white font-bold"
+>
+  Open UPI App
+</button>
 
           <button
             onClick={() => setPaymentDone(true)}
