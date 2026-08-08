@@ -8,7 +8,7 @@ const categories = [
     title: "Fresh Salads",
     items: "8 Items",
     image:
-      "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=800&q=80"
   },
   {
     id: "Rolls",

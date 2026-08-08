@@ -7,15 +7,42 @@ import { X, ZoomIn } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const galleryImages = [
-  { src: 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=800&q=80', span: 'col-span-1 row-span-1 md:col-span-1 md:row-span-1', label: 'Fresh Power Bowl' },
-  { src: 'https://images.unsplash.com/photo-1482049016688-2d3e1b311543?auto=format&fit=crop&w=800&q=80', span: 'col-span-1 row-span-2 md:col-span-1 md:row-span-2', label: 'Organic Greens' },
-  { src: 'https://images.unsplash.com/photo-1543339308-43e59d6b73a6?auto=format&fit=crop&w=800&q=80', span: 'col-span-2 row-span-2 md:col-span-2 md:row-span-2', label: 'Spicy Salmon' },
-  { src: 'https://images.unsplash.com/photo-1476224203421-9ac39bcb3327?auto=format&fit=crop&w=800&q=80', span: 'col-span-1 row-span-1 md:col-span-1 md:row-span-1', label: 'Crisp Veggie' },
-  { src: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80', span: 'col-span-1 row-span-1 md:col-span-2 md:row-span-1', label: 'Pumpkin Cutlets' },
-  { src: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=800&q=80', span: 'col-span-1 row-span-2 md:col-span-1 md:row-span-2', label: 'Vibrant Salad' },
-  { src: 'https://images.unsplash.com/photo-1600891964092-4316c288032e?auto=format&fit=crop&w=800&q=80', span: 'col-span-1 row-span-1 md:col-span-1 md:row-span-1', label: 'Chef Special' },
+  {
+    src: "https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=600&q=70",
+    span: "col-span-1 row-span-1 md:col-span-1 md:row-span-1",
+    label: "Fresh Power Bowl",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1482049016688-2d3e1b311543?auto=format&fit=crop&w=600&q=70",
+    span: "col-span-1 row-span-2 md:col-span-1 md:row-span-2",
+    label: "Organic Greens",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1543339308-43e59d6b73a6?auto=format&fit=crop&w=700&q=70",
+    span: "col-span-2 row-span-2 md:col-span-2 md:row-span-2",
+    label: "Spicy Salmon",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1476224203421-9ac39bcb3327?auto=format&fit=crop&w=600&q=70",
+    span: "col-span-1 row-span-1 md:col-span-1 md:row-span-1",
+    label: "Crisp Veggie",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=70",
+    span: "col-span-1 row-span-1 md:col-span-2 md:row-span-1",
+    label: "Pumpkin Cutlets",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=600&q=70",
+    span: "col-span-1 row-span-2 md:col-span-1 md:row-span-2",
+    label: "Vibrant Salad",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1600891964092-4316c288032e?auto=format&fit=crop&w=600&q=70",
+    span: "col-span-1 row-span-1 md:col-span-1 md:row-span-1",
+    label: "Chef Special",
+  },
 ];
-
 export default function GallerySection() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
@@ -73,13 +100,16 @@ export default function GallerySection() {
               )}
             >
               {/* Image */}
-              <Image
-                src={image.src}
-                alt={image.label}
-                fill
-                className="object-cover group-hover:scale-110 transition-transform duration-1000 ease-out"
-                referrerPolicy="no-referrer"
-              />
+             <Image
+  src={image.src}
+  alt={image.label}
+  fill
+  loading="lazy"
+  quality={70}
+  sizes="(max-width:768px) 100vw, (max-width:1200px) 50vw, 25vw"
+  className="object-cover group-hover:scale-105 transition-transform duration-500"
+  referrerPolicy="no-referrer"
+/>
               
               {/* Gradients */}
               <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors duration-500 z-10" />
@@ -122,12 +152,14 @@ export default function GallerySection() {
               onClick={(e) => e.stopPropagation()}
             >
               <Image
-                src={selectedImage}
-                alt="Enlarged view"
-                fill
-                className="object-cover sm:object-contain"
-                referrerPolicy="no-referrer"
-              />
+  src={selectedImage}
+  alt="Enlarged view"
+  fill
+  quality={80}
+  sizes="100vw"
+  className="object-contain"
+  referrerPolicy="no-referrer"
+/>
             </motion.div>
           </motion.div>
         )}

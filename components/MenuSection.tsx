@@ -221,8 +221,8 @@ const categories = [
                     <Heart
                       className={`w-5 h-5 transition ${
                         item.id
-  ? favorites.includes(item.id)
-  : false
+                       ? favorites.includes(item.id)
+                      : false
                           ? "fill-red-500 text-red-500"
                           : "text-white/70"
                       }`}
@@ -256,6 +256,7 @@ const categories = [
                     src={item.image}
                     alt={item.name}
                     fill
+                    sizes="(max-width:768px) 100vw, (max-width:1200px) 50vw, 33vw"
                     className="object-cover group-hover:scale-110 transition duration-700"
                   />
 

@@ -88,6 +88,7 @@ export default function Hero() {
                 height="18"
                 viewBox="0 0 24 24"
                 fill="none"
+                sizes="(max-width:768px) 100vw, (max-width:1200px) 50vw, 33vw"
                 stroke="currentColor"
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -117,6 +118,7 @@ export default function Hero() {
                 >
                   <Image
                     fill
+                    sizes="(max-width:768px) 100vw, (max-width:1200px) 50vw, 33vw"
                     sizes="48px"
                     alt="Customer"
                     className="object-cover"
@@ -207,18 +209,27 @@ export default function Hero() {
             className="relative z-20 flex aspect-square w-[165%] max-w-[1080px] items-center justify-center lg:w-[204%]"
           >
             <motion.div
-              animate={{ y: [-10, 12], rotate: [-1, 1, -1] }}
-              transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
-              className="relative h-full w-full"
-            >
-              <Image
-                src="/images/hero-bowl.png"
-                alt="Healthy Bowl"
-                fill
-                priority
-                className="object-contain drop-shadow-[0_45px_70px_rgba(0,0,0,.65)]"
-              />
-            </motion.div>
+  initial={{ opacity: 0, y: 30 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{
+    duration: 0.8,
+    ease: "easeOut",
+  }}
+  className="relative h-full w-full"
+>
+  <Image
+    src="/images/hero-bowl.png" // your actual image
+    alt="Healthy Bowl"
+    fill
+    priority
+    loading="eager"
+    sizes="(max-width:768px) 100vw, (max-width:1200px) 50vw, 33vw"
+    priority
+    quality={75}
+    sizes="(max-width:768px) 100vw, 50vw"
+    className="object-contain drop-shadow-2xl"
+  />
+</motion.div>
           </motion.div>
 
           <motion.div
@@ -243,6 +254,7 @@ export default function Hero() {
                 src="/images/basil.png"
                 alt="Basil"
                 fill
+                sizes="(max-width:768px) 100vw, (max-width:1200px) 50vw, 33vw"
                 sizes="(min-width: 1024px) 112px, (min-width: 640px) 96px, 80px"
                 className="object-contain drop-shadow-[0_18px_24px_rgba(0,0,0,.48)]"
               />
