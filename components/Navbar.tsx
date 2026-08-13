@@ -17,11 +17,14 @@ const navLinks = [
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [cartOpen, setCartOpen] = useState(false);
 
   const { totalItems } = useCart();
 
   const handleOrderNow = () => {
+    /*
+     * If cart is empty:
+     * smoothly scroll to Menu.
+     */
     if (totalItems === 0) {
       const menu = document.getElementById("menu");
 
@@ -36,8 +39,24 @@ export default function Navbar() {
           behavior: "smooth",
         });
       }
-    } else {
-      setCartOpen(true);
+
+      return;
+    }
+
+    /*
+     * If cart has items:
+     * trigger the existing CartButton.
+     *
+     * CartButton owns its drawer state,
+     * so we click the actual cart button instead
+     * of maintaining a second cart state here.
+     */
+    const cartButton = document.querySelector(
+      '[data-cart-button="true"]'
+    ) as HTMLButtonElement | null;
+
+    if (cartButton) {
+      cartButton.click();
     }
   };
 
@@ -122,7 +141,9 @@ export default function Navbar() {
               <button
                 aria-label="Toggle menu"
                 className="h-11 w-11 rounded-xl border border-white/10 bg-black/30 flex items-center justify-center text-white hover:bg-white/10 transition"
-                onClick={() => setMobileOpen(!mobileOpen)}
+                onClick={() =>
+                  setMobileOpen(!mobileOpen)
+                }
               >
                 {mobileOpen ? (
                   <X className="w-6 h-6" />
@@ -148,7 +169,9 @@ export default function Navbar() {
                   <a
                     key={item.name}
                     href={item.href}
-                    onClick={() => setMobileOpen(false)}
+                    onClick={() =>
+                      setMobileOpen(false)
+                    }
                     className="text-white/70 hover:text-white transition"
                   >
                     {item.name}

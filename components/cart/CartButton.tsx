@@ -14,7 +14,8 @@ export default function CartButton() {
   return (
     <>
       <button
-        onClick={() => setOpen(true)}
+  data-cart-button="true"
+  onClick={() => setOpen(true)}
         aria-label="Open shopping cart"
         className="relative w-12 h-12 rounded-full bg-[#E63946] hover:bg-[#cf2430] transition-all duration-300 flex items-center justify-center shadow-lg"
       >
