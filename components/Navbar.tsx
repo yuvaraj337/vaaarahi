@@ -197,17 +197,18 @@ export default function Navbar() {
       {/* FLOATING MOBILE CART */}
       {/* ========================================= */}
 
-      <div
-        className="
-          lg:hidden
-          fixed
-          right-5
-          bottom-[145px]
-          z-[60]
-        "
-      >
-        <CartButton />
-      </div>
+      {/* FLOATING MOBILE CART */}
+<div
+  className="
+    lg:hidden
+    fixed
+    right-5
+    bottom-[215px]
+    z-[60]
+  "
+>
+  <CartButton />
+</div>
 
     </header>
   );
