@@ -204,7 +204,7 @@ export default function Navbar() {
     lg:hidden
     fixed
     right-5
-    bottom-[385px]
+    bottom-[300px]
     z-[70]
   "
 >
