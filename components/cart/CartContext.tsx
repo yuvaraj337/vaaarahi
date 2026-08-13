@@ -9,7 +9,7 @@ import {
 import toast from "react-hot-toast";
 
 export interface CartItem {
-  id: string | number;
+  id: number;
   name: string;
   price: number;
   image: string;
@@ -23,17 +23,11 @@ interface CartContextType {
     item: Omit<CartItem, "quantity">
   ) => void;
 
-  removeFromCart: (
-    id: string | number
-  ) => void;
+  removeFromCart: (id: number) => void;
 
-  increaseQuantity: (
-    id: string | number
-  ) => void;
+  increaseQuantity: (id: number) => void;
 
-  decreaseQuantity: (
-    id: string | number
-  ) => void;
+  decreaseQuantity: (id: number) => void;
 
   clearCart: () => void;
 
@@ -57,18 +51,16 @@ export function CartProvider({
   ) => {
     setCart((previousCart) => {
       const existingItem = previousCart.find(
-        (cartItem) =>
-          String(cartItem.id) === String(item.id)
+        (cartItem) => cartItem.id === item.id
       );
 
       // Item already exists → increase quantity
       if (existingItem) {
         return previousCart.map((cartItem) =>
-          String(cartItem.id) === String(item.id)
+          cartItem.id === item.id
             ? {
                 ...cartItem,
-                quantity:
-                  cartItem.quantity + 1,
+                quantity: cartItem.quantity + 1,
               }
             : cartItem
         );
@@ -83,15 +75,18 @@ export function CartProvider({
         },
       ];
     });
+
+    // ONE toast only
+    toast.success(
+      `🛒 ${item.name} added to cart`
+    );
   };
 
   // PLUS
-  const increaseQuantity = (
-    id: string | number
-  ) => {
+  const increaseQuantity = (id: number) => {
     setCart((previousCart) =>
       previousCart.map((item) =>
-        String(item.id) === String(id)
+        item.id === id
           ? {
               ...item,
               quantity: item.quantity + 1,
@@ -102,13 +97,11 @@ export function CartProvider({
   };
 
   // MINUS
-  const decreaseQuantity = (
-    id: string | number
-  ) => {
+  const decreaseQuantity = (id: number) => {
     setCart((previousCart) =>
       previousCart
         .map((item) =>
-          String(item.id) === String(id)
+          item.id === id
             ? {
                 ...item,
                 quantity: item.quantity - 1,
@@ -122,13 +115,10 @@ export function CartProvider({
   };
 
   // DELETE
-  const removeFromCart = (
-    id: string | number
-  ) => {
+  const removeFromCart = (id: number) => {
     setCart((previousCart) => {
       const item = previousCart.find(
-        (cartItem) =>
-          String(cartItem.id) === String(id)
+        (cartItem) => cartItem.id === id
       );
 
       if (item) {
@@ -138,8 +128,7 @@ export function CartProvider({
       }
 
       return previousCart.filter(
-        (cartItem) =>
-          String(cartItem.id) !== String(id)
+        (cartItem) => cartItem.id !== id
       );
     });
   };

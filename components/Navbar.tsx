@@ -16,29 +16,35 @@ const navLinks = [
 ];
 
 export default function Navbar() {
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [cartOpen, setCartOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] =
+    useState(false);
 
   const { totalItems } = useCart();
 
   const handleOrderNow = () => {
     if (totalItems === 0) {
-      const menu = document.getElementById("menu");
+      const menu =
+        document.getElementById("menu");
 
-if (menu) {
-  const y =
-    menu.getBoundingClientRect().top +
-    window.pageYOffset -
-    120;
+      if (menu) {
+        const y =
+          menu.getBoundingClientRect().top +
+          window.pageYOffset -
+          120;
 
-  window.scrollTo({
-    top: y,
-    behavior: "smooth",
-  });
-}
-    } else {
-      setCartOpen(true);
+        window.scrollTo({
+          top: y,
+          behavior: "smooth",
+        });
+      }
+
+      return;
     }
+
+    // CartButton owns its drawer state,
+    // so Navbar cannot directly open it.
+    // Send the customer to checkout instead.
+    window.location.href = "/checkout";
   };
 
   return (
@@ -49,16 +55,17 @@ if (menu) {
 
           <div className="flex h-[72px] items-center justify-between px-6">
 
-            {/* Logo */}
+            {/* LOGO */}
 
-            <Link href="/" className="flex items-center gap-3">
-
+            <Link
+              href="/"
+              className="flex items-center gap-3"
+            >
               <div className="h-10 w-10 rounded-full bg-[#E63946] flex items-center justify-center font-bold text-white text-xl">
                 V
               </div>
 
               <div>
-
                 <h1 className="text-white font-bold text-lg">
                   Varahi Eat & Fit
                 </h1>
@@ -66,17 +73,14 @@ if (menu) {
                 <p className="text-xs text-white/50">
                   Healthy Restaurant
                 </p>
-
               </div>
-
             </Link>
 
-            {/* Desktop Menu */}
+            {/* DESKTOP MENU */}
 
             <nav className="hidden lg:flex items-center gap-8">
 
               {navLinks.map((item) => (
-
                 <a
                   key={item.name}
                   href={item.href}
@@ -84,21 +88,20 @@ if (menu) {
                 >
                   {item.name}
                 </a>
-
               ))}
 
             </nav>
 
-            {/* Desktop Right */}
+            {/* DESKTOP RIGHT */}
 
             <div className="hidden lg:flex items-center gap-4">
 
-              <CartButton
-                open={cartOpen}
-                setOpen={setCartOpen}
-              />
+              {/* CartButton manages its own drawer */}
+
+              <CartButton />
 
               <button
+                type="button"
                 onClick={handleOrderNow}
                 className="bg-[#E63946] hover:bg-red-600 text-white px-6 py-3 rounded-full font-semibold transition-all duration-300 hover:scale-105"
               >
@@ -107,44 +110,55 @@ if (menu) {
 
             </div>
 
-            {/* Mobile Menu Button */}
+            {/* MOBILE MENU BUTTON */}
 
             <button
+              type="button"
+              aria-label="Toggle menu"
               className="lg:hidden text-white"
-              onClick={() => setMobileOpen(!mobileOpen)}
+              onClick={() =>
+                setMobileOpen(
+                  !mobileOpen
+                )
+              }
             >
-              {mobileOpen ? <X /> : <Menu />}
+              {mobileOpen ? (
+                <X />
+              ) : (
+                <Menu />
+              )}
             </button>
 
           </div>
 
-          {/* Mobile Menu */}
+          {/* MOBILE MENU */}
 
           {mobileOpen && (
-
             <div className="lg:hidden border-t border-white/10 p-6 bg-black/80 backdrop-blur-xl">
 
               <div className="flex flex-col gap-5">
 
                 {navLinks.map((item) => (
-
                   <a
                     key={item.name}
                     href={item.href}
-                    onClick={() => setMobileOpen(false)}
+                    onClick={() =>
+                      setMobileOpen(false)
+                    }
                     className="text-white/70 hover:text-white transition"
                   >
                     {item.name}
                   </a>
-
                 ))}
 
-                <CartButton
-                  open={cartOpen}
-                  setOpen={setCartOpen}
-                />
+                {/* MOBILE CART */}
+
+                <CartButton />
+
+                {/* MOBILE ORDER */}
 
                 <button
+                  type="button"
                   onClick={() => {
                     setMobileOpen(false);
 
@@ -160,7 +174,6 @@ if (menu) {
               </div>
 
             </div>
-
           )}
 
         </div>
@@ -168,4 +181,4 @@ if (menu) {
       </div>
     </header>
   );
-} 
+}
