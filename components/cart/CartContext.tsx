@@ -3,6 +3,7 @@
 import {
   createContext,
   useContext,
+  useEffect,
   useMemo,
   useState,
 } from "react";
@@ -38,35 +39,101 @@ interface CartContextType {
 const CartContext =
   createContext<CartContextType | null>(null);
 
+const CART_STORAGE_KEY = "varahi-eat-fit-cart";
+
 export function CartProvider({
   children,
 }: {
   children: React.ReactNode;
 }) {
   const [cart, setCart] = useState<CartItem[]>([]);
+  const [isLoaded, setIsLoaded] = useState(false);
 
-  // ADD ITEM
+  /*
+   * LOAD CART FROM LOCAL STORAGE
+   *
+   * This runs only in the browser.
+   */
+  useEffect(() => {
+    try {
+      const savedCart =
+        window.localStorage.getItem(
+          CART_STORAGE_KEY
+        );
+
+      if (savedCart) {
+        const parsedCart =
+          JSON.parse(savedCart);
+
+        if (Array.isArray(parsedCart)) {
+          setCart(parsedCart);
+        }
+      }
+    } catch (error) {
+      console.error(
+        "Failed to load cart:",
+        error
+      );
+    } finally {
+      setIsLoaded(true);
+    }
+  }, []);
+
+  /*
+   * SAVE CART TO LOCAL STORAGE
+   *
+   * Every time cart changes, save it.
+   */
+  useEffect(() => {
+    if (!isLoaded) {
+      return;
+    }
+
+    try {
+      window.localStorage.setItem(
+        CART_STORAGE_KEY,
+        JSON.stringify(cart)
+      );
+    } catch (error) {
+      console.error(
+        "Failed to save cart:",
+        error
+      );
+    }
+  }, [cart, isLoaded]);
+
+  /*
+   * ADD ITEM
+   *
+   * If item already exists:
+   * quantity becomes +1.
+   *
+   * Otherwise:
+   * item is added with quantity 1.
+   */
   const addToCart = (
     item: Omit<CartItem, "quantity">
   ) => {
     setCart((previousCart) => {
-      const existingItem = previousCart.find(
-        (cartItem) => cartItem.id === item.id
-      );
+      const existingItem =
+        previousCart.find(
+          (cartItem) =>
+            cartItem.id === item.id
+        );
 
-      // Item already exists → increase quantity
       if (existingItem) {
-        return previousCart.map((cartItem) =>
-          cartItem.id === item.id
-            ? {
-                ...cartItem,
-                quantity: cartItem.quantity + 1,
-              }
-            : cartItem
+        return previousCart.map(
+          (cartItem) =>
+            cartItem.id === item.id
+              ? {
+                  ...cartItem,
+                  quantity:
+                    cartItem.quantity + 1,
+                }
+              : cartItem
         );
       }
 
-      // New item
       return [
         ...previousCart,
         {
@@ -76,50 +143,70 @@ export function CartProvider({
       ];
     });
 
-    // ONE toast only
+    // Only ONE toast
     toast.success(
       `🛒 ${item.name} added to cart`
     );
   };
 
-  // PLUS
-  const increaseQuantity = (id: number) => {
+  /*
+   * PLUS
+   */
+  const increaseQuantity = (
+    id: number
+  ) => {
     setCart((previousCart) =>
       previousCart.map((item) =>
         item.id === id
           ? {
               ...item,
-              quantity: item.quantity + 1,
+              quantity:
+                item.quantity + 1,
             }
           : item
       )
     );
   };
 
-  // MINUS
-  const decreaseQuantity = (id: number) => {
+  /*
+   * MINUS
+   *
+   * When quantity reaches 0,
+   * the item is removed.
+   */
+  const decreaseQuantity = (
+    id: number
+  ) => {
     setCart((previousCart) =>
       previousCart
         .map((item) =>
           item.id === id
             ? {
                 ...item,
-                quantity: item.quantity - 1,
+                quantity:
+                  item.quantity - 1,
               }
             : item
         )
         .filter(
-          (item) => item.quantity > 0
+          (item) =>
+            item.quantity > 0
         )
     );
   };
 
-  // DELETE
-  const removeFromCart = (id: number) => {
+  /*
+   * DELETE
+   */
+  const removeFromCart = (
+    id: number
+  ) => {
     setCart((previousCart) => {
-      const item = previousCart.find(
-        (cartItem) => cartItem.id === id
-      );
+      const item =
+        previousCart.find(
+          (cartItem) =>
+            cartItem.id === id
+        );
 
       if (item) {
         toast.error(
@@ -128,18 +215,26 @@ export function CartProvider({
       }
 
       return previousCart.filter(
-        (cartItem) => cartItem.id !== id
+        (cartItem) =>
+          cartItem.id !== id
       );
     });
   };
 
-  // CLEAR CART
+  /*
+   * CLEAR CART
+   */
   const clearCart = () => {
     setCart([]);
-    toast.success("🛍️ Cart cleared");
+
+    toast.success(
+      "🛍️ Cart cleared"
+    );
   };
 
-  // TOTAL ITEMS
+  /*
+   * TOTAL ITEMS
+   */
   const totalItems = useMemo(() => {
     return cart.reduce(
       (total, item) =>
@@ -148,7 +243,9 @@ export function CartProvider({
     );
   }, [cart]);
 
-  // TOTAL PRICE
+  /*
+   * TOTAL PRICE
+   */
   const totalPrice = useMemo(() => {
     return cart.reduce(
       (total, item) =>
