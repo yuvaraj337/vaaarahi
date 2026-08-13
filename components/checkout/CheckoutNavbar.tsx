@@ -15,17 +15,23 @@ export default function CheckoutNavbar() {
         {/* Logo */}
 
         <Link
-          href="/"
-          className="flex items-center gap-4"
-        >
+  href="/"
+  className="flex items-center gap-3"
+>
+  <div className="h-10 w-10 rounded-full bg-[#E63946] flex items-center justify-center font-bold text-white text-xl">
+    V
+  </div>
 
-          <img
-            src="/logo.png"
-            alt="Logo"
-            className="h-16 object-contain"
-          />
+  <div>
+    <h1 className="text-white font-bold text-lg">
+      Varahi Eat & Fit
+    </h1>
 
-        </Link>
+    <p className="text-xs text-white/50">
+      Healthy Restaurant
+    </p>
+  </div>
+</Link>
 
         {/* Navigation */}
 

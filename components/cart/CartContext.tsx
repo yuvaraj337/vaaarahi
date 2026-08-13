@@ -1,10 +1,15 @@
 "use client";
 
-import { createContext, useContext, useMemo, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useMemo,
+  useState,
+} from "react";
 import toast from "react-hot-toast";
 
 export interface CartItem {
-  id: number;
+  id: string | number;
   name: string;
   price: number;
   image: string;
@@ -13,16 +18,31 @@ export interface CartItem {
 
 interface CartContextType {
   cart: CartItem[];
-  addToCart: (item: Omit<CartItem, "quantity">) => void;
-  removeFromCart: (id: number) => void;
-  increaseQuantity: (id: number) => void;
-  decreaseQuantity: (id: number) => void;
+
+  addToCart: (
+    item: Omit<CartItem, "quantity">
+  ) => void;
+
+  removeFromCart: (
+    id: string | number
+  ) => void;
+
+  increaseQuantity: (
+    id: string | number
+  ) => void;
+
+  decreaseQuantity: (
+    id: string | number
+  ) => void;
+
   clearCart: () => void;
+
   totalItems: number;
   totalPrice: number;
 }
 
-const CartContext = createContext<CartContextType | null>(null);
+const CartContext =
+  createContext<CartContextType | null>(null);
 
 export function CartProvider({
   children,
@@ -31,90 +51,123 @@ export function CartProvider({
 }) {
   const [cart, setCart] = useState<CartItem[]>([]);
 
-  const addToCart = (item: Omit<CartItem, "quantity">) => {
-    setCart((prev) => {
-      const existing = prev.find((i) => i.id === item.id);
+  // ADD ITEM
+  const addToCart = (
+    item: Omit<CartItem, "quantity">
+  ) => {
+    setCart((previousCart) => {
+      const existingItem = previousCart.find(
+        (cartItem) =>
+          String(cartItem.id) === String(item.id)
+      );
 
-      if (existing) {
-        toast.success(`➕ ${item.name} quantity increased`);
-
-        return prev.map((i) =>
-          i.id === item.id
-            ? { ...i, quantity: i.quantity + 1 }
-            : i
+      // Item already exists → increase quantity
+      if (existingItem) {
+        return previousCart.map((cartItem) =>
+          String(cartItem.id) === String(item.id)
+            ? {
+                ...cartItem,
+                quantity:
+                  cartItem.quantity + 1,
+              }
+            : cartItem
         );
       }
 
-      toast.success(`🛒 ${item.name} added to cart`);
-
-      return [...prev, { ...item, quantity: 1 }];
+      // New item
+      return [
+        ...previousCart,
+        {
+          ...item,
+          quantity: 1,
+        },
+      ];
     });
   };
 
-  const increaseQuantity = (id: number) => {
-    setCart((prev) =>
-      prev.map((i) => {
-        if (i.id === id) {
-          toast.success(`➕ ${i.name} quantity increased`);
-
-          return {
-            ...i,
-            quantity: i.quantity + 1,
-          };
-        }
-
-        return i;
-      })
+  // PLUS
+  const increaseQuantity = (
+    id: string | number
+  ) => {
+    setCart((previousCart) =>
+      previousCart.map((item) =>
+        String(item.id) === String(id)
+          ? {
+              ...item,
+              quantity: item.quantity + 1,
+            }
+          : item
+      )
     );
   };
 
-  const decreaseQuantity = (id: number) => {
-    setCart((prev) =>
-      prev
-        .map((i) => {
-          if (i.id === id) {
-            toast(`➖ ${i.name} quantity decreased`);
-
-            return {
-              ...i,
-              quantity: i.quantity - 1,
-            };
-          }
-
-          return i;
-        })
-        .filter((i) => i.quantity > 0)
+  // MINUS
+  const decreaseQuantity = (
+    id: string | number
+  ) => {
+    setCart((previousCart) =>
+      previousCart
+        .map((item) =>
+          String(item.id) === String(id)
+            ? {
+                ...item,
+                quantity: item.quantity - 1,
+              }
+            : item
+        )
+        .filter(
+          (item) => item.quantity > 0
+        )
     );
   };
 
-  const removeFromCart = (id: number) => {
-    const item = cart.find((i) => i.id === id);
+  // DELETE
+  const removeFromCart = (
+    id: string | number
+  ) => {
+    setCart((previousCart) => {
+      const item = previousCart.find(
+        (cartItem) =>
+          String(cartItem.id) === String(id)
+      );
 
-    if (item) {
-      toast.error(`❌ ${item.name} removed from cart`);
-    }
+      if (item) {
+        toast.error(
+          `❌ ${item.name} removed from cart`
+        );
+      }
 
-    setCart((prev) => prev.filter((i) => i.id !== id));
+      return previousCart.filter(
+        (cartItem) =>
+          String(cartItem.id) !== String(id)
+      );
+    });
   };
 
+  // CLEAR CART
   const clearCart = () => {
-    toast.success("🛍️ Cart cleared");
     setCart([]);
+    toast.success("🛍️ Cart cleared");
   };
 
-  const totalItems = useMemo(
-    () => cart.reduce((sum, item) => sum + item.quantity, 0),
-    [cart]
-  );
+  // TOTAL ITEMS
+  const totalItems = useMemo(() => {
+    return cart.reduce(
+      (total, item) =>
+        total + item.quantity,
+      0
+    );
+  }, [cart]);
 
-  const totalPrice = useMemo(
-    () =>
-      cart.reduce(
-        (sum, item) => sum + item.quantity * item.price,
-        0
-      ),
-    [cart]
-  );
+  // TOTAL PRICE
+  const totalPrice = useMemo(() => {
+    return cart.reduce(
+      (total, item) =>
+        total +
+        item.price * item.quantity,
+      0
+    );
+  }, [cart]);
 
   return (
     <CartContext.Provider
@@ -135,10 +188,13 @@ export function CartProvider({
 }
 
 export function useCart() {
-  const context = useContext(CartContext);
+  const context =
+    useContext(CartContext);
 
   if (!context) {
-    throw new Error("useCart must be used inside CartProvider");
+    throw new Error(
+      "useCart must be used inside CartProvider"
+    );
   }
 
   return context;

@@ -1,18 +1,13 @@
 "use client";
 
+import { useState } from "react";
 import { ShoppingCart } from "lucide-react";
-import CartDrawer from "./CartDrawer";
+
 import { useCart } from "./CartContext";
+import CartDrawer from "./CartDrawer";
 
-interface Props {
-  open: boolean;
-  setOpen: (value: boolean) => void;
-}
-
-export default function CartButton({
-  open,
-  setOpen,
-}: Props) {
+export default function CartButton() {
+  const [open, setOpen] = useState(false);
 
   const { totalItems } = useCart();
 
@@ -20,12 +15,12 @@ export default function CartButton({
     <>
       <button
         onClick={() => setOpen(true)}
-        className="relative flex items-center justify-center w-11 h-11 rounded-full bg-[#E63946] hover:bg-red-600 transition"
+        className="relative w-12 h-12 rounded-full bg-[#E63946] hover:bg-[#cf2430] transition-all duration-300 flex items-center justify-center"
       >
-        <ShoppingCart className="text-white" />
+        <ShoppingCart className="w-6 h-6 text-white" />
 
         {totalItems > 0 && (
-          <span className="absolute -top-2 -right-2 bg-white text-black rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold">
+          <span className="absolute -top-1 -right-1 min-w-[22px] h-[22px] px-1 rounded-full bg-white text-[#E63946] text-xs font-bold flex items-center justify-center border-2 border-[#E63946]">
             {totalItems}
           </span>
         )}

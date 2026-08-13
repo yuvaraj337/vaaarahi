@@ -330,15 +330,12 @@ const categories = [
                     <button
                       onClick={() => {
                         addToCart({
-  id: Number(item.id ?? 0),
+  id: item.id,
   name: item.name,
   price: item.price,
   image: item.image,
 });
-
-                        toast.success(
-                          `${item.name} added to cart`
-                        );
+toast.success(`🛒 ${item.name} added to cart`);
                       }}
                       className="w-14 h-14 rounded-full bg-[#E63946] hover:bg-[#cf2430] transition-all duration-300 flex items-center justify-center hover:scale-110 active:scale-95 shadow-lg"
                     >
