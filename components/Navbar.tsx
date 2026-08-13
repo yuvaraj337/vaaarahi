@@ -49,6 +49,7 @@ export default function Navbar() {
 
   return (
     <header className="fixed top-0 left-0 w-full z-50">
+
       <div className="mx-auto max-w-7xl px-6">
 
         <div className="mt-4 rounded-2xl border border-white/10 bg-black/50 backdrop-blur-xl">
@@ -61,11 +62,13 @@ export default function Navbar() {
               href="/"
               className="flex items-center gap-3"
             >
+
               <div className="h-10 w-10 rounded-full bg-[#E63946] flex items-center justify-center font-bold text-white text-xl">
                 V
               </div>
 
               <div>
+
                 <h1 className="text-white font-bold text-lg">
                   Varahi Eat & Fit
                 </h1>
@@ -73,14 +76,18 @@ export default function Navbar() {
                 <p className="text-xs text-white/50">
                   Healthy Restaurant
                 </p>
+
               </div>
+
             </Link>
+
 
             {/* DESKTOP MENU */}
 
             <nav className="hidden lg:flex items-center gap-8">
 
               {navLinks.map((item) => (
+
                 <a
                   key={item.name}
                   href={item.href}
@@ -88,9 +95,11 @@ export default function Navbar() {
                 >
                   {item.name}
                 </a>
+
               ))}
 
             </nav>
+
 
             {/* DESKTOP RIGHT */}
 
@@ -110,6 +119,7 @@ export default function Navbar() {
 
             </div>
 
+
             {/* MOBILE MENU BUTTON */}
 
             <button
@@ -117,28 +127,31 @@ export default function Navbar() {
               aria-label="Toggle menu"
               className="lg:hidden text-white"
               onClick={() =>
-                setMobileOpen(
-                  !mobileOpen
-                )
+                setMobileOpen(!mobileOpen)
               }
             >
+
               {mobileOpen ? (
                 <X />
               ) : (
                 <Menu />
               )}
+
             </button>
 
           </div>
 
+
           {/* MOBILE MENU */}
 
           {mobileOpen && (
+
             <div className="lg:hidden border-t border-white/10 p-6 bg-black/80 backdrop-blur-xl">
 
               <div className="flex flex-col gap-5">
 
                 {navLinks.map((item) => (
+
                   <a
                     key={item.name}
                     href={item.href}
@@ -149,11 +162,9 @@ export default function Navbar() {
                   >
                     {item.name}
                   </a>
+
                 ))}
 
-                {/* MOBILE CART */}
-
-                <CartButton />
 
                 {/* MOBILE ORDER */}
 
@@ -174,11 +185,30 @@ export default function Navbar() {
               </div>
 
             </div>
+
           )}
 
         </div>
 
       </div>
+
+
+      {/* ========================================= */}
+      {/* FLOATING MOBILE CART */}
+      {/* ========================================= */}
+
+      <div
+        className="
+          lg:hidden
+          fixed
+          right-5
+          bottom-[145px]
+          z-[60]
+        "
+      >
+        <CartButton />
+      </div>
+
     </header>
   );
 }
