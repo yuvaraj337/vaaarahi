@@ -95,7 +95,7 @@ export default function CheckoutPage() {
   }
 
   const upiLink =
-    `upi://pay?pa=6302094687@ybl&pn=Varahi Eat & Fit&am=${grandTotal}`;
+    `upi://pay?pa=6302094687@fam&pn=Varahi Eat & Fit&am=${grandTotal}`;
 
   return (
     <>

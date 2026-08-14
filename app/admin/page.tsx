@@ -19,15 +19,19 @@ import {
   signOut,
 } from "firebase/auth";
 
-export default function AdminPage() {
+import {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL,
+} from "firebase/storage";
 
+export default function AdminPage() {
   const router = useRouter();
 
-  const [foods, setFoods] =
-    useState<MenuItem[]>([]);
+  const [foods, setFoods] = useState<MenuItem[]>([]);
 
-  const [loading, setLoading] =
-    useState(false);
+  const [loading, setLoading] = useState(false);
 
   const [editingId, setEditingId] =
     useState<string | null>(null);
@@ -35,81 +39,159 @@ export default function AdminPage() {
   const [checkingAuth, setCheckingAuth] =
     useState(true);
 
-  const [form, setForm] =
-    useState<MenuItem>({
-      name: "",
-      description: "",
-      category: "Salads",
-      price: 0,
-      image: "",
-      rating: 4.8,
-      calories: 0,
-      protein: "",
-      isVegetarian: true,
-    });
+  const [imageFile, setImageFile] =
+    useState<File | null>(null);
+
+  const [imageUploading, setImageUploading] =
+    useState(false);
+
+  const [form, setForm] = useState<MenuItem>({
+    name: "",
+    description: "",
+    category: "Salads",
+    price: 0,
+    image: "",
+    rating: 4.8,
+    calories: 0,
+    protein: "",
+    // Kept internally so the existing MenuItem type
+    // and menu service are not changed.
+    isVegetarian: true,
+  });
 
   async function loadFoods() {
-  const data = await getMenu();
+    const data = await getMenu();
 
-  console.log("Firestore Menu:", data);
+    console.log("Firestore Menu:", data);
 
-  setFoods(data);
-}
+    setFoods(data);
+  }
 
   useEffect(() => {
     loadFoods();
   }, []);
 
   useEffect(() => {
-
     const unsubscribe =
       onAuthStateChanged(auth, (user) => {
-
         if (!user) {
-
           router.replace("/login");
-
         } else {
-
           setCheckingAuth(false);
-
         }
-
       });
 
     return () => unsubscribe();
-
   }, [router]);
 
   if (checkingAuth) {
-
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#0F0F10] text-white">
         Checking Login...
       </div>
     );
-
   }
 
+  /* =========================================
+     UPLOAD IMAGE TO FIREBASE STORAGE
+  ========================================= */
+
+  async function uploadImage(
+    file: File
+  ): Promise<string> {
+    const storage = getStorage(auth.app);
+
+    const safeFileName = file.name
+      .replace(/[^a-zA-Z0-9.-]/g, "-");
+
+    const fileName =
+      `${Date.now()}-${safeFileName}`;
+
+    const storageRef = ref(
+      storage,
+      `food-images/${fileName}`
+    );
+
+    await uploadBytes(storageRef, file);
+
+    const downloadURL =
+      await getDownloadURL(storageRef);
+
+    return downloadURL;
+  }
+
+  /* =========================================
+     SUBMIT FOOD
+  ========================================= */
+
   async function handleSubmit() {
-
     try {
-
       setLoading(true);
 
-      if (editingId) {
+      let imageUrl = form.image;
 
-        await updateFood(editingId, form);
+      /* ---------------------------------------
+         Upload selected image if available
+      --------------------------------------- */
 
-      } else {
+      if (imageFile) {
+        setImageUploading(true);
 
-        await addFood(form);
+        imageUrl = await uploadImage(imageFile);
 
+        setImageUploading(false);
       }
+
+      /* ---------------------------------------
+         Require an image
+      --------------------------------------- */
+
+      if (!imageUrl.trim()) {
+        alert(
+          "Please upload an image or enter an online image URL."
+        );
+
+        setLoading(false);
+        return;
+      }
+
+      const foodData: MenuItem = {
+        ...form,
+        image: imageUrl,
+      };
+
+      /* ---------------------------------------
+         EDIT
+      --------------------------------------- */
+
+      if (editingId) {
+        await updateFood(
+          editingId,
+          foodData
+        );
+      }
+
+      /* ---------------------------------------
+         ADD
+      --------------------------------------- */
+
+      else {
+        await addFood(foodData);
+      }
+
+      /* ---------------------------------------
+         Refresh list
+      --------------------------------------- */
 
       await loadFoods();
 
+      /* ---------------------------------------
+         Reset form
+      --------------------------------------- */
+
       setEditingId(null);
+
+      setImageFile(null);
 
       setForm({
         name: "",
@@ -123,25 +205,44 @@ export default function AdminPage() {
         isVegetarian: true,
       });
 
+    } catch (error) {
+      console.error(
+        "Error saving food:",
+        error
+      );
+
+      alert(
+        "Failed to save food item. Please try again."
+      );
     } finally {
-
+      setImageUploading(false);
       setLoading(false);
-
     }
-
   }
-    async function handleDelete(id: string) {
-    if (!confirm("Delete this food item?")) return;
+
+  /* =========================================
+     DELETE
+  ========================================= */
+
+  async function handleDelete(id: string) {
+    if (!confirm("Delete this food item?"))
+      return;
 
     await deleteFood(id);
 
     await loadFoods();
   }
 
+  /* =========================================
+     EDIT
+  ========================================= */
+
   function handleEdit(food: MenuItem) {
     if (!food.id) return;
 
     setEditingId(food.id);
+
+    setImageFile(null);
 
     setForm({
       name: food.name,
@@ -152,7 +253,8 @@ export default function AdminPage() {
       rating: food.rating,
       calories: food.calories,
       protein: food.protein,
-      isVegetarian: food.isVegetarian,
+      isVegetarian:
+        food.isVegetarian ?? true,
     });
 
     window.scrollTo({
@@ -165,6 +267,10 @@ export default function AdminPage() {
     <main className="min-h-screen bg-[#0F0F10] text-white p-10">
 
       <div className="max-w-7xl mx-auto">
+
+        {/* =====================================
+            HEADER
+        ===================================== */}
 
         <div className="flex justify-between items-center mb-10">
 
@@ -186,19 +292,21 @@ export default function AdminPage() {
 
         <div className="grid lg:grid-cols-2 gap-10">
 
-          {/* Add Food */}
+          {/* =====================================
+              ADD FOOD
+          ===================================== */}
 
           <div className="bg-[#171717] rounded-3xl p-8">
 
             <h2 className="text-3xl font-bold mb-8">
-
               {editingId
                 ? "Edit Food"
                 : "Add Food"}
-
             </h2>
 
             <div className="space-y-5">
+
+              {/* FOOD NAME */}
 
               <input
                 type="text"
@@ -213,6 +321,8 @@ export default function AdminPage() {
                 className="w-full bg-[#252525] rounded-xl p-4 outline-none"
               />
 
+              {/* DESCRIPTION */}
+
               <textarea
                 rows={4}
                 placeholder="Description"
@@ -220,104 +330,219 @@ export default function AdminPage() {
                 onChange={(e) =>
                   setForm({
                     ...form,
-                    description: e.target.value,
+                    description:
+                      e.target.value,
                   })
                 }
                 className="w-full bg-[#252525] rounded-xl p-4 outline-none"
               />
+
+              {/* CATEGORY */}
 
               <select
                 value={form.category}
                 onChange={(e) =>
                   setForm({
                     ...form,
-                    category: e.target.value,
+                    category:
+                      e.target.value,
                   })
                 }
                 className="w-full bg-[#252525] rounded-xl p-4 outline-none"
               >
                 <option>Salads</option>
-                <option>Protein Shakes</option>
+                <option>
+                  Protein Shakes
+                </option>
                 <option>Soups</option>
                 <option>Rolls</option>
                 <option>Eggs</option>
               </select>
 
-              <input
-                type="number"
-                placeholder="Price"
-                value={form.price}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    price: Number(e.target.value),
-                  })
-                }
-                className="w-full bg-[#252525] rounded-xl p-4 outline-none"
-              />
-
-              <input
-                type="text"
-                placeholder="Image URL"
-                value={form.image}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    image: e.target.value,
-                  })
-                }
-                className="w-full bg-[#252525] rounded-xl p-4 outline-none"
-              />
+              {/* PRICE */}
 
               <input
                 type="number"
-                placeholder="Calories"
-                value={form.calories}
+                min="0"
+                placeholder="Price (₹)"
+                value={
+                  form.price === 0
+                    ? ""
+                    : form.price
+                }
                 onChange={(e) =>
                   setForm({
                     ...form,
-                    calories: Number(e.target.value),
+                    price:
+                      Number(
+                        e.target.value
+                      ) || 0,
                   })
                 }
                 className="w-full bg-[#252525] rounded-xl p-4 outline-none"
               />
 
+              {/* CALORIES */}
+
+              <input
+                type="number"
+                min="0"
+                placeholder="Calories (kcal)"
+                value={
+                  form.calories === 0
+                    ? ""
+                    : form.calories
+                }
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    calories:
+                      Number(
+                        e.target.value
+                      ) || 0,
+                  })
+                }
+                className="w-full bg-[#252525] rounded-xl p-4 outline-none"
+              />
+
+              {/* PROTEIN */}
+
               <input
                 type="text"
-                placeholder="Protein"
+                placeholder="Protein (g)"
                 value={form.protein}
                 onChange={(e) =>
                   setForm({
                     ...form,
-                    protein: e.target.value,
+                    protein:
+                      e.target.value,
                   })
                 }
                 className="w-full bg-[#252525] rounded-xl p-4 outline-none"
               />
 
-              <label className="flex gap-3 items-center">
+              {/* =================================
+                  DEVICE IMAGE UPLOAD
+              ================================= */}
+
+              <div className="bg-[#252525] rounded-xl p-5">
+
+                <label className="block text-white font-semibold mb-3">
+                  Food Image
+                </label>
 
                 <input
-                  type="checkbox"
-                  checked={form.isVegetarian}
-                  onChange={(e) =>
-                    setForm({
-                      ...form,
-                      isVegetarian: e.target.checked,
-                    })
-                  }
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp"
+                  onChange={(e) => {
+                    const file =
+                      e.target.files?.[0] ||
+                      null;
+
+                    setImageFile(file);
+                  }}
+                  className="w-full text-white/70 text-sm
+                  file:mr-4
+                  file:rounded-lg
+                  file:border-0
+                  file:bg-[#E63946]
+                  file:px-4
+                  file:py-2
+                  file:text-white
+                  file:font-semibold
+                  file:cursor-pointer"
                 />
 
-                Vegetarian
+                {imageFile && (
+                  <p className="text-green-400 text-sm mt-3">
+                    Selected:{" "}
+                    {imageFile.name}
+                  </p>
+                )}
 
-              </label>
+              </div>
+
+              {/* =================================
+                  OR ONLINE IMAGE URL
+              ================================= */}
+
+              <div>
+
+                <p className="text-white/50 text-sm mb-2">
+                  Or use an online image
+                </p>
+
+                <input
+                  type="url"
+                  placeholder="Online Image URL (https://...)"
+                  value={form.image}
+                  onChange={(e) => {
+                    setForm({
+                      ...form,
+                      image:
+                        e.target.value,
+                    });
+
+                    // If online URL is entered,
+                    // remove selected file so URL
+                    // becomes the image source.
+                    setImageFile(null);
+                  }}
+                  className="w-full bg-[#252525] rounded-xl p-4 outline-none"
+                />
+
+              </div>
+
+              {/* =================================
+                  IMAGE PREVIEW
+              ================================= */}
+
+              {(form.image ||
+                imageFile) && (
+                <div className="bg-[#252525] rounded-xl p-4">
+
+                  <p className="text-white/50 text-sm mb-3">
+                    Image Preview
+                  </p>
+
+                  {imageFile ? (
+                    <img
+                      src={URL.createObjectURL(
+                        imageFile
+                      )}
+                      alt="Selected food"
+                      className="w-full h-48 object-cover rounded-xl"
+                    />
+                  ) : form.image ? (
+                    <img
+                      src={form.image}
+                      alt="Food preview"
+                      className="w-full h-48 object-cover rounded-xl"
+                      onError={(e) => {
+                        e.currentTarget.style.display =
+                          "none";
+                      }}
+                    />
+                  ) : null}
+
+                </div>
+              )}
+
+              {/* =================================
+                  ADD / SAVE
+              ================================= */}
 
               <button
                 onClick={handleSubmit}
-                disabled={loading}
-                className="w-full bg-[#E63946] hover:bg-red-600 rounded-xl py-4 font-bold text-lg"
+                disabled={
+                  loading ||
+                  imageUploading
+                }
+                className="w-full bg-[#E63946] hover:bg-red-600 disabled:opacity-60 disabled:cursor-not-allowed rounded-xl py-4 font-bold text-lg"
               >
-                {loading
+                {imageUploading
+                  ? "Uploading Image..."
+                  : loading
                   ? "Saving..."
                   : editingId
                   ? "Save Changes"
@@ -327,7 +552,10 @@ export default function AdminPage() {
             </div>
 
           </div>
-                    {/* Food Items */}
+
+          {/* =====================================
+              FOOD ITEMS
+          ===================================== */}
 
           <div className="bg-[#171717] rounded-3xl p-8">
 
@@ -389,7 +617,9 @@ export default function AdminPage() {
                     <div className="flex gap-3">
 
                       <button
-                        onClick={() => handleEdit(food)}
+                        onClick={() =>
+                          handleEdit(food)
+                        }
                         className="bg-blue-600 hover:bg-blue-700 px-5 py-3 rounded-xl font-semibold"
                       >
                         Edit
@@ -397,8 +627,12 @@ export default function AdminPage() {
 
                       <button
                         onClick={() => {
-                          if (!food.id) return;
-                          handleDelete(food.id);
+                          if (!food.id)
+                            return;
+
+                          handleDelete(
+                            food.id
+                          );
                         }}
                         className="bg-red-600 hover:bg-red-700 px-5 py-3 rounded-xl font-semibold"
                       >
@@ -420,6 +654,7 @@ export default function AdminPage() {
         </div>
 
       </div>
-          </main>
+
+    </main>
   );
 }
