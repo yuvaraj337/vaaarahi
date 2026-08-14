@@ -1,10 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
-import { CheckCircle2, Loader2, MessageCircle } from "lucide-react";
-import { createRestaurantOrder } from "@/lib/orderService";
+import {
+  CheckCircle2,
+  Loader2,
+  MessageCircle,
+} from "lucide-react";
 
+import { createRestaurantOrder } from "@/lib/orderService";
 import type { CartItem } from "@/components/cart/CartContext";
 
 interface Props {
@@ -51,6 +55,12 @@ export default function PlaceOrderButton({
 
   const isCOD = paymentMethod === "COD";
 
+  /*
+   * Prevent the automatic UPI submission
+   * from running more than once.
+   */
+  const submissionStarted = useRef(false);
+
   const handlePlaceOrder = async () => {
     /* ========================================
        1. BASIC VALIDATION
@@ -67,7 +77,9 @@ export default function PlaceOrderButton({
     }
 
     if (!phoneValid) {
-      toast.error("Please enter a valid 10-digit mobile number.");
+      toast.error(
+        "Please enter a valid 10-digit mobile number."
+      );
       return;
     }
 
@@ -90,15 +102,20 @@ export default function PlaceOrderButton({
     }
 
     /* ========================================
-       3. PREVENT DOUBLE CLICK
+       3. PREVENT DOUBLE SUBMISSION
     ======================================== */
 
-    if (placingOrder) {
+    if (
+      placingOrder ||
+      orderGenerated ||
+      submissionStarted.current
+    ) {
       return;
     }
 
+    submissionStarted.current = true;
+
     setPlacingOrder(true);
-    setOrderGenerated(true);
 
     /* ========================================
        4. GENERATE ORDER ID
@@ -121,6 +138,14 @@ export default function PlaceOrderButton({
       )
       .join("\n");
 
+    const orderItems = cart.map((item) => ({
+      id: item.id,
+      name: item.name,
+      price: item.price,
+      quantity: item.quantity,
+      image: item.image,
+    }));
+
     /* ========================================
        6. PAYMENT STATUS
     ======================================== */
@@ -128,47 +153,61 @@ export default function PlaceOrderButton({
     const paymentText = isCOD
       ? "Cash on Delivery"
       : "UPI / Online Payment — CUSTOMER MARKED AS PAID";
-      const orderItems = cart.map((item) => ({
-  id: item.id,
-  name: item.name,
-  price: item.price,
-  quantity: item.quantity,
-  image: item.image,
-}));
 
-const restaurantStatus =
-  isCOD
-    ? "NEW"
-    : paymentDone
-      ? "PAYMENT_PENDING"
+    const restaurantStatus = isCOD
+      ? "NEW"
       : "PAYMENT_PENDING";
 
-await createRestaurantOrder({
-  orderId,
+    /* ========================================
+       7. SAVE ORDER TO FIREBASE
+    ======================================== */
 
-  name,
-  phone,
-  address,
-  location,
+    try {
+      await createRestaurantOrder({
+        orderId,
 
-  items: orderItems,
+        name,
+        phone,
+        address,
+        location,
 
-  total: grandTotal,
+        items: orderItems,
 
-  paymentMethod,
+        total: grandTotal,
 
-  // This means CUSTOMER says they paid.
-  // It does NOT mean restaurant verified it.
-  paymentDone,
+        paymentMethod,
 
-  // Restaurant must verify this.
-  paymentVerified: false,
+        /*
+         * Customer says they paid.
+         * Restaurant still needs to verify it.
+         */
+        paymentDone,
 
-  status: restaurantStatus,
-});
+        /*
+         * Restaurant verification remains false.
+         */
+        paymentVerified: false,
+
+        status: restaurantStatus,
+      });
+    } catch (error) {
+      console.error(
+        "Failed to create restaurant order:",
+        error
+      );
+
+      toast.error(
+        "Unable to submit your order. Please try again."
+      );
+
+      submissionStarted.current = false;
+      setPlacingOrder(false);
+
+      return;
+    }
 
     /* ========================================
-       7. WHATSAPP ORDER MESSAGE
+       8. CREATE WHATSAPP MESSAGE
     ======================================== */
 
     const message = `🍽️ *NEW VARAHI EAT & FIT ORDER*
@@ -209,7 +248,7 @@ ${paymentText}
 ${
   isCOD
     ? "🟡 COD ORDER — PAYMENT TO BE COLLECTED ON DELIVERY"
-    : "🟢 CUSTOMER SAYS PAYMENT IS COMPLETED — PLEASE VERIFY UPI PAYMENT BEFORE CONFIRMING ORDER"
+    : "🟢 PAYMENT SUBMITTED — PLEASE VERIFY THE UPI TRANSACTION"
 }
 
 ━━━━━━━━━━━━━━━━━━━━
@@ -225,7 +264,7 @@ ${
 Thank you for ordering from *Varahi Eat & Fit* ❤️`;
 
     /* ========================================
-       8. WHATSAPP URL
+       9. WHATSAPP URL
     ======================================== */
 
     const whatsappUrl =
@@ -233,47 +272,71 @@ Thank you for ordering from *Varahi Eat & Fit* ❤️`;
       encodeURIComponent(message);
 
     /* ========================================
-       9. OPEN WHATSAPP
+       10. SHOW SUCCESS MESSAGE
     ======================================== */
 
-    try {
-      window.open(
-        whatsappUrl,
-        "_blank",
-        "noopener,noreferrer"
-      );
+    setOrderGenerated(true);
 
-      toast.success(
-        "Order generated! Sending order to WhatsApp."
-      );
-    } catch {
-      toast.error(
-        "Unable to open WhatsApp. Please try again."
-      );
+    toast.success(
+      isCOD
+        ? "Order submitted successfully."
+        : "Payment submitted for verification."
+    );
 
-      setPlacingOrder(false);
-      return;
-    }
+    setPlacingOrder(false);
 
     /* ========================================
-       10. MOVE TO ORDER CONFIRMATION PAGE
+       11. OPEN WHATSAPP
+       
+       Using location.href instead of window.open
+       makes this more reliable on mobile browsers.
     ======================================== */
 
     setTimeout(() => {
-      window.location.href =
-        `/order-placed?id=${orderId}`;
-    }, 800);
+      window.location.href = whatsappUrl;
+    }, 500);
   };
+
+  /* ========================================
+     AUTOMATIC UPI ORDER SUBMISSION
+
+     When the customer presses:
+     "I've Completed Payment"
+
+     PaymentSection sets paymentDone = true.
+
+     This automatically:
+     1. Creates the Firebase order
+     2. Shows verification message
+     3. Opens WhatsApp
+  ======================================== */
+
+  useEffect(() => {
+    if (
+      !isCOD &&
+      paymentDone &&
+      !orderGenerated &&
+      !placingOrder &&
+      !submissionStarted.current
+    ) {
+      handlePlaceOrder();
+    }
+  }, [
+    paymentDone,
+    isCOD,
+    orderGenerated,
+    placingOrder,
+  ]);
 
   return (
     <div className="w-full">
 
       {/* ========================================
-          ORDER STATUS
+          PAYMENT SUBMITTED SUCCESS
       ======================================== */}
 
-      {orderGenerated && (
-        <div className="mb-5 rounded-2xl border border-green-500/20 bg-green-500/10 p-5">
+      {orderGenerated && !isCOD && (
+        <div className="mb-5 rounded-2xl border border-green-500/30 bg-green-500/10 p-5">
 
           <div className="flex items-start gap-3">
 
@@ -281,13 +344,13 @@ Thank you for ordering from *Varahi Eat & Fit* ❤️`;
 
             <div>
 
-              <h3 className="text-green-400 font-bold">
-                Order Generated
+              <h3 className="text-green-400 font-bold text-lg">
+                Payment submitted for verification.
               </h3>
 
-              <p className="text-white/60 text-sm mt-1 leading-6">
-                Your order details are being sent to the
-                restaurant through WhatsApp.
+              <p className="text-white/60 text-sm mt-2 leading-6">
+                Your payment has been submitted.
+                Opening WhatsApp with your order details...
               </p>
 
             </div>
@@ -298,33 +361,19 @@ Thank you for ordering from *Varahi Eat & Fit* ❤️`;
       )}
 
       {/* ========================================
-          UPI REMINDER
+          SENDING STATUS
       ======================================== */}
 
-      {!isCOD && !paymentDone && (
-        <div className="mb-5 rounded-2xl border border-yellow-500/20 bg-yellow-500/10 p-5">
+      {placingOrder && !isCOD && (
+        <div className="mb-5 rounded-2xl border border-blue-500/20 bg-blue-500/10 p-5">
 
-          <div className="flex items-start gap-3">
+          <div className="flex items-center justify-center gap-3">
 
-            <span className="text-xl">
-              ⚠️
-            </span>
+            <Loader2 className="w-5 h-5 text-blue-400 animate-spin" />
 
-            <div>
-
-              <h3 className="text-yellow-400 font-bold">
-                Payment Required
-              </h3>
-
-              <p className="text-white/60 text-sm mt-1 leading-6">
-                Complete the UPI payment above and press
-                <span className="text-white font-semibold">
-                  {" "}I've Completed Payment
-                </span>
-                {" "}before placing your order.
-              </p>
-
-            </div>
+            <p className="text-blue-300 font-semibold">
+              Submitting payment for verification...
+            </p>
 
           </div>
 
@@ -351,9 +400,8 @@ Thank you for ordering from *Varahi Eat & Fit* ❤️`;
               </h3>
 
               <p className="text-white/60 text-sm mt-1 leading-6">
-                No online payment is required.
-                Payment will be collected when your order
-                is delivered.
+                Payment will be collected when your
+                order is delivered.
               </p>
 
             </div>
@@ -364,60 +412,84 @@ Thank you for ordering from *Varahi Eat & Fit* ❤️`;
       )}
 
       {/* ========================================
-          PLACE ORDER BUTTON
+          COD BUTTON ONLY
+
+          UPI does NOT need a button anymore.
+          Pressing "I've Completed Payment" in the
+          payment section automatically submits it.
       ======================================== */}
 
-      <button
-        type="button"
-        onClick={handlePlaceOrder}
-        disabled={placingOrder || orderGenerated}
-        className="
-          w-full
-          bg-[#E63946]
-          hover:bg-red-600
-          disabled:bg-[#7f242c]
-          disabled:cursor-not-allowed
-          rounded-2xl
-          py-4
-          text-lg
-          font-bold
-          text-white
-          transition-all
-          duration-300
-          hover:scale-[1.01]
-          active:scale-[0.98]
-          shadow-lg
-          flex
-          items-center
-          justify-center
-          gap-3
-        "
-      >
-
-        {placingOrder ? (
-          <>
-            <Loader2 className="w-5 h-5 animate-spin" />
-
-            Sending Order...
-          </>
-        ) : orderGenerated ? (
-          <>
-            <CheckCircle2 className="w-5 h-5" />
-
-            Order Sent
-          </>
-        ) : (
-          <>
-            <MessageCircle className="w-5 h-5" />
-
-            Place Order on WhatsApp
-          </>
-        )}
-
-      </button>
+      {isCOD && !orderGenerated && (
+        <button
+          type="button"
+          onClick={handlePlaceOrder}
+          disabled={placingOrder}
+          className="
+            w-full
+            bg-[#E63946]
+            hover:bg-red-600
+            disabled:bg-[#7f242c]
+            disabled:cursor-not-allowed
+            rounded-2xl
+            py-4
+            text-lg
+            font-bold
+            text-white
+            transition-all
+            duration-300
+            hover:scale-[1.01]
+            active:scale-[0.98]
+            shadow-lg
+            flex
+            items-center
+            justify-center
+            gap-3
+          "
+        >
+          {placingOrder ? (
+            <>
+              <Loader2 className="w-5 h-5 animate-spin" />
+              Sending Order...
+            </>
+          ) : (
+            <>
+              <MessageCircle className="w-5 h-5" />
+              Place COD Order
+            </>
+          )}
+        </button>
+      )}
 
       {/* ========================================
-          SMALL SECURITY MESSAGE
+          COD SUCCESS
+      ======================================== */}
+
+      {isCOD && orderGenerated && (
+        <div className="mb-5 rounded-2xl border border-green-500/30 bg-green-500/10 p-5">
+
+          <div className="flex items-start gap-3">
+
+            <CheckCircle2 className="w-6 h-6 text-green-400 shrink-0" />
+
+            <div>
+
+              <h3 className="text-green-400 font-bold">
+                Order submitted successfully.
+              </h3>
+
+              <p className="text-white/60 text-sm mt-1 leading-6">
+                Opening WhatsApp with your order details...
+              </p>
+
+            </div>
+
+          </div>
+
+        </div>
+      )}
+
+      {/* ========================================
+          SECURITY MESSAGE
       ======================================== */}
 
       <p className="text-center text-white/35 text-xs mt-4 leading-5">

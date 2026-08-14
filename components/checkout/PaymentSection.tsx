@@ -1,10 +1,12 @@
 "use client";
 
+import Image from "next/image";
 import QRCode from "react-qr-code";
 import {
   CreditCard,
   ShieldCheck,
   CheckCircle2,
+  Banknote,
 } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -30,33 +32,81 @@ export default function PaymentSection({
   const methods = [
     {
       id: "COD",
-      icon: "💵",
       title: "Cash",
       subtitle: "Pay on Delivery",
+      icon: (
+        <div className="w-12 h-12 flex items-center justify-center">
+          <Banknote
+            size={42}
+            strokeWidth={1.8}
+            className="text-green-400"
+          />
+        </div>
+      ),
     },
+
     {
       id: "PHONEPE",
-      icon: "🟣",
       title: "PhonePe",
       subtitle: "Fast Payment",
+      icon: (
+        <div className="w-12 h-12 flex items-center justify-center">
+          <Image
+            src="/payment-logos/phonepe.png"
+            alt="PhonePe"
+            width={52}
+            height={52}
+            className="w-12 h-12 object-contain"
+          />
+        </div>
+      ),
     },
+
     {
       id: "GPAY",
-      icon: "🟢",
       title: "Google Pay",
       subtitle: "Secure",
+      icon: (
+        <div className="w-12 h-12 flex items-center justify-center">
+          <Image
+            src="/payment-logos/googlepay.png"
+            alt="Google Pay"
+            width={52}
+            height={52}
+            className="w-12 h-12 object-contain"
+          />
+        </div>
+      ),
     },
+
     {
       id: "PAYTM",
-      icon: "🔵",
       title: "Paytm",
-      subtitle: "Wallet",
+      subtitle: "UPI & Wallet", 
+      icon: (
+        <div className="w-12 h-12 flex items-center justify-center">
+          <Image
+            src="/payment-logos/paytm.png"
+            alt="Paytm"
+            width={52}
+            height={52}
+            className="w-12 h-12 object-contain"
+          />
+        </div>
+      ),
     },
+
     {
       id: "UPI",
-      icon: "📱",
       title: "UPI",
       subtitle: "Any App",
+      icon: (
+        <div className="w-12 h-12 rounded-xl bg-white flex items-center justify-center">
+          <span className="text-[#555] text-xl font-black">
+            UPI
+          </span>
+        </div>
+      ),
     },
   ];
 
@@ -104,17 +154,22 @@ export default function PaymentSection({
 
       {/* Payment Cards */}
       <div className="grid md:grid-cols-3 lg:grid-cols-5 gap-4">
+
         {methods.map((item) => (
           <button
             key={item.id}
-            onClick={() => setPaymentMethod(item.id)}
+            onClick={() =>
+              setPaymentMethod(item.id)
+            }
             className={`rounded-2xl border p-5 transition-all duration-300 hover:scale-105 ${
               paymentMethod === item.id
                 ? "border-[#E63946] bg-[#E63946]/15"
                 : "border-white/10 bg-[#222]"
             }`}
           >
-            <div className="text-4xl mb-3">
+
+            {/* Payment Icon */}
+            <div className="h-14 mb-3 flex items-center justify-center">
               {item.icon}
             </div>
 
@@ -125,21 +180,25 @@ export default function PaymentSection({
             <p className="text-white/50 text-sm mt-1">
               {item.subtitle}
             </p>
+
           </button>
         ))}
+
       </div>
 
-      {/* QR */}
+      {/* QR PAYMENT */}
       {paymentMethod !== "COD" && (
         <div className="mt-10 bg-[#111] rounded-3xl p-8 border border-white/10 text-center">
 
-          {/* QR CENTERING FIX */}
+          {/* QR CENTER */}
           <div className="w-full flex justify-center items-center">
             <div className="bg-white p-5 rounded-2xl flex items-center justify-center">
+
               <QRCode
                 value={upiLink}
                 size={200}
               />
+
             </div>
           </div>
 
@@ -155,6 +214,7 @@ export default function PaymentSection({
             ₹{grandTotal}
           </div>
 
+          {/* OPEN UPI APP */}
           <button
             onClick={openUPI}
             className="inline-block mt-8 bg-green-600 hover:bg-green-700 transition rounded-2xl px-10 py-4 text-white font-bold"
@@ -162,6 +222,7 @@ export default function PaymentSection({
             Open UPI App
           </button>
 
+          {/* PAYMENT COMPLETED */}
           <button
             onClick={() => setPaymentDone(true)}
             className="block w-full mt-5 bg-blue-600 hover:bg-blue-700 rounded-2xl py-4 text-white font-bold transition"
@@ -169,17 +230,21 @@ export default function PaymentSection({
             ✔ I've Completed Payment
           </button>
 
+          {/* PAYMENT VERIFIED */}
           {paymentDone && (
             <div className="mt-5 flex items-center justify-center gap-3 text-green-400">
+
               <CheckCircle2 />
 
-              Payment Verified Successfully
+              
+
             </div>
           )}
+
         </div>
       )}
 
-      {/* COD */}
+      {/* CASH ON DELIVERY */}
       {paymentMethod === "COD" && (
         <div className="mt-10 bg-green-500/10 border border-green-500/20 rounded-3xl p-6">
 
@@ -188,6 +253,7 @@ export default function PaymentSection({
             <ShieldCheck className="text-green-400" />
 
             <div>
+
               <h3 className="text-green-400 font-bold text-lg">
                 Cash on Delivery
               </h3>
@@ -195,11 +261,14 @@ export default function PaymentSection({
               <p className="text-white/60 mt-1">
                 Pay safely after receiving your delicious meal.
               </p>
+
             </div>
 
           </div>
+
         </div>
       )}
+
     </div>
   );
 }
