@@ -46,18 +46,100 @@ export default function Navbar() {
     /*
      * If cart has items:
      * trigger the existing CartButton.
-     *
-     * CartButton owns its drawer state,
-     * so we click the actual cart button instead
-     * of maintaining a second cart state here.
      */
-    const cartButton = document.querySelector(
-      '[data-cart-button="true"]'
-    ) as HTMLButtonElement | null;
+    const cartButtons = Array.from(
+      document.querySelectorAll(
+        '[data-cart-button="true"]'
+      )
+    ) as HTMLButtonElement[];
 
-    if (cartButton) {
-      cartButton.click();
+    /*
+     * Find the visible cart button.
+     * This is important on mobile because there
+     * are separate desktop/mobile cart buttons.
+     */
+    const visibleCartButton = cartButtons.find(
+      (button) => {
+        const style = window.getComputedStyle(button);
+        const rect = button.getBoundingClientRect();
+
+        return (
+          style.display !== "none" &&
+          style.visibility !== "hidden" &&
+          rect.width > 0 &&
+          rect.height > 0
+        );
+      }
+    );
+
+    if (visibleCartButton) {
+      visibleCartButton.click();
     }
+  };
+
+  /*
+   * MOBILE ONLY
+   *
+   * Handles Order Now after closing the mobile menu.
+   * No desktop behavior is changed.
+   */
+  const handleMobileOrderNow = () => {
+    setMobileOpen(false);
+
+    if (totalItems === 0) {
+      setTimeout(() => {
+        const menu = document.getElementById("menu");
+
+        if (menu) {
+          const y =
+            menu.getBoundingClientRect().top +
+            window.pageYOffset -
+            120;
+
+          window.scrollTo({
+            top: y,
+            behavior: "smooth",
+          });
+        }
+      }, 100);
+
+      return;
+    }
+
+    /*
+     * Cart has items.
+     *
+     * Wait until the mobile menu closes, then
+     * find the visible cart button and click it.
+     */
+    setTimeout(() => {
+      const cartButtons = Array.from(
+        document.querySelectorAll(
+          '[data-cart-button="true"]'
+        )
+      ) as HTMLButtonElement[];
+
+      const visibleCartButton = cartButtons.find(
+        (button) => {
+          const style =
+            window.getComputedStyle(button);
+
+          const rect =
+            button.getBoundingClientRect();
+
+          return (
+            style.display !== "none" &&
+            style.visibility !== "hidden" &&
+            rect.width > 0 &&
+            rect.height > 0
+          );
+        }
+      );
+
+      if (visibleCartButton) {
+        visibleCartButton.click();
+      }
+    }, 100);
   };
 
   return (
@@ -180,13 +262,8 @@ export default function Navbar() {
 
                 {/* MOBILE ORDER NOW */}
                 <button
-                  onClick={() => {
-                    setMobileOpen(false);
-
-                    setTimeout(() => {
-                      handleOrderNow();
-                    }, 200);
-                  }}
+                  type="button"
+                  onClick={handleMobileOrderNow}
                   className="bg-[#E63946] hover:bg-red-600 text-white py-3 rounded-full font-semibold transition"
                 >
                   Order Now
