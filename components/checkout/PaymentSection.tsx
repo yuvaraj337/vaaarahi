@@ -236,7 +236,7 @@ export default function PaymentSection({
 
               <CheckCircle2 />
 
-              payment submitted for verification. we will verify your payment and confirm your order shortly.
+              payment submitted for verification. we will verify your payment and confirm your order shortly on whatsapp.
 
             </div>
           )}
