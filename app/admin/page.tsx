@@ -19,12 +19,8 @@ import {
   signOut,
 } from "firebase/auth";
 
-import {
-  getStorage,
-  ref,
-  uploadBytes,
-  getDownloadURL,
-} from "firebase/storage";
+// Firebase Storage is not used for food images.
+
 
 export default function AdminPage() {
   const router = useRouter();
@@ -93,31 +89,43 @@ export default function AdminPage() {
   }
 
   /* =========================================
-     UPLOAD IMAGE TO FIREBASE STORAGE
-  ========================================= */
+     UPLOAD IMAGE TO CLOUDINARY
+     ========================================= */
 
   async function uploadImage(
     file: File
   ): Promise<string> {
-    const storage = getStorage(auth.app);
+    const cloudName = "n5adao1f";
+    const uploadPreset = "varahi_food";
 
-    const safeFileName = file.name
-      .replace(/[^a-zA-Z0-9.-]/g, "-");
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", uploadPreset);
 
-    const fileName =
-      `${Date.now()}-${safeFileName}`;
-
-    const storageRef = ref(
-      storage,
-      `food-images/${fileName}`
+    const response = await fetch(
+      `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+      {
+        method: "POST",
+        body: formData,
+      }
     );
 
-    await uploadBytes(storageRef, file);
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(
+        `Cloudinary upload failed: ${errorText}`
+      );
+    }
 
-    const downloadURL =
-      await getDownloadURL(storageRef);
+    const data = await response.json();
 
-    return downloadURL;
+    if (!data.secure_url) {
+      throw new Error(
+        "Cloudinary did not return an image URL."
+      );
+    }
+
+    return data.secure_url;
   }
 
   /* =========================================
