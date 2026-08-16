@@ -12,7 +12,13 @@ import { MenuItem } from "@/types/menu";
 
 import { useRouter } from "next/navigation";
 
-import { auth } from "@/lib/firebase";
+import { auth, db } from "@/lib/firebase";
+import {
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+} from "firebase/firestore";
 
 import {
   onAuthStateChanged,
@@ -41,6 +47,22 @@ export default function AdminPage() {
   const [imageUploading, setImageUploading] =
     useState(false);
 
+  const [reviews, setReviews] = useState<
+    {
+      id: string;
+      name: string;
+      image: string;
+      rating: number;
+      review: string;
+    }[]
+  >([]);
+
+  const [reviewsLoading, setReviewsLoading] =
+    useState(true);
+
+  const [deletingReviewId, setDeletingReviewId] =
+    useState<string | null>(null);
+
   const [form, setForm] = useState<MenuItem>({
     name: "",
     description: "",
@@ -63,8 +85,48 @@ export default function AdminPage() {
     setFoods(data);
   }
 
+  async function loadReviews() {
+    try {
+      setReviewsLoading(true);
+
+      const snapshot = await getDocs(
+        collection(db, "customerReviews")
+      );
+
+      const data = snapshot.docs.map((reviewDoc) => {
+        const reviewData = reviewDoc.data();
+
+        return {
+          id: reviewDoc.id,
+          name: String(
+            reviewData.name ?? "Customer"
+          ),
+          image: String(
+            reviewData.image ?? ""
+          ),
+          rating: Number(
+            reviewData.rating ?? 5
+          ),
+          review: String(
+            reviewData.review ?? ""
+          ),
+        };
+      });
+
+      setReviews(data);
+    } catch (error) {
+      console.error(
+        "Error loading customer reviews:",
+        error
+      );
+    } finally {
+      setReviewsLoading(false);
+    }
+  }
+
   useEffect(() => {
     loadFoods();
+    loadReviews();
   }, []);
 
   useEffect(() => {
@@ -239,6 +301,47 @@ export default function AdminPage() {
     await deleteFood(id);
 
     await loadFoods();
+  }
+
+  /* =========================================
+     DELETE CUSTOMER REVIEW
+  ========================================= */
+
+  async function handleDeleteReview(
+    id: string
+  ) {
+    if (
+      !confirm(
+        "Delete this customer review? This cannot be undone."
+      )
+    ) {
+      return;
+    }
+
+    try {
+      setDeletingReviewId(id);
+
+      await deleteDoc(
+        doc(db, "customerReviews", id)
+      );
+
+      setReviews((previous) =>
+        previous.filter(
+          (review) => review.id !== id
+        )
+      );
+    } catch (error) {
+      console.error(
+        "Error deleting customer review:",
+        error
+      );
+
+      alert(
+        "Failed to delete the review. Please try again."
+      );
+    } finally {
+      setDeletingReviewId(null);
+    }
   }
 
   /* =========================================
@@ -657,6 +760,107 @@ export default function AdminPage() {
 
             </div>
 
+          </div>
+
+          {/* =====================================
+              CUSTOMER REVIEWS
+          ===================================== */}
+          <div className="bg-[#171717] rounded-3xl p-8 lg:col-span-2">
+            <div className="flex items-center justify-between gap-4 mb-8">
+              <div>
+                <h2 className="text-3xl font-bold">
+                  Customer Reviews
+                </h2>
+                <p className="text-white/50 mt-2">
+                  Reviews submitted by customers from the website.
+                </p>
+              </div>
+
+              <div className="bg-[#252525] px-4 py-2 rounded-xl text-white/70 text-sm">
+                {reviews.length} review
+                {reviews.length === 1 ? "" : "s"}
+              </div>
+            </div>
+
+            {reviewsLoading ? (
+              <p className="text-white/50">
+                Loading reviews...
+              </p>
+            ) : reviews.length === 0 ? (
+              <div className="bg-[#252525] rounded-2xl p-8 text-center">
+                <p className="text-white/50">
+                  No customer reviews yet.
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                {reviews.map((review) => (
+                  <div
+                    key={review.id}
+                    className="bg-[#252525] rounded-2xl p-5"
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex items-center gap-4 min-w-0">
+                        {review.image ? (
+                          <img
+                            src={review.image}
+                            alt={review.name}
+                            className="w-14 h-14 rounded-full object-cover shrink-0"
+                          />
+                        ) : (
+                          <div className="w-14 h-14 rounded-full bg-[#E63946] flex items-center justify-center text-xl font-bold shrink-0">
+                            {review.name
+                              .trim()
+                              .charAt(0)
+                              .toUpperCase() || "C"}
+                          </div>
+                        )}
+
+                        <div className="min-w-0">
+                          <h3 className="font-bold text-lg truncate">
+                            {review.name}
+                          </h3>
+
+                          <div className="flex items-center gap-1 mt-1">
+                            {[1, 2, 3, 4, 5].map((star) => (
+                              <span
+                                key={star}
+                                className={
+                                  star <= review.rating
+                                    ? "text-yellow-400"
+                                    : "text-white/20"
+                                }
+                              >
+                                ★
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          handleDeleteReview(review.id)
+                        }
+                        disabled={
+                          deletingReviewId === review.id
+                        }
+                        className="bg-red-600 hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed px-4 py-2 rounded-xl font-semibold shrink-0"
+                      >
+                        {deletingReviewId === review.id
+                          ? "Deleting..."
+                          : "Delete"}
+                      </button>
+                    </div>
+
+                    <p className="text-white/60 leading-7 mt-5">
+                      "{review.review}"
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
         </div>
