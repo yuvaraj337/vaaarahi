@@ -9,11 +9,11 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "unsplash.com",
+        hostname: "plus.unsplash.com",
       },
       {
         protocol: "https",
-        hostname: "res.cloudinary.com",
+        hostname: "unsplash.com",
       },
       {
         protocol: "https",
@@ -21,11 +21,8 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "plus.unsplash.com",
+        hostname: "res.cloudinary.com",
       },
-      {
-        
-      }
     ],
   },
 };
