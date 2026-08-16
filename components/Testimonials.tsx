@@ -3,6 +3,9 @@
 import { motion } from 'motion/react';
 import Image from 'next/image';
 import { Star, Quote } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { collection, onSnapshot } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 
 const testimonials = [
   {
@@ -37,8 +40,71 @@ const testimonials = [
   }
 ];
 
+type CustomerReview = {
+  id: string;
+  name: string;
+  image: string;
+  rating: number;
+  review: string;
+  createdAt?: unknown;
+};
+
 export default function Testimonials() {
-  const marqueeItems = [...testimonials, ...testimonials];
+  const [customerReviews, setCustomerReviews] = useState<CustomerReview[]>([]);
+
+  useEffect(() => {
+    const unsubscribe = onSnapshot(
+      collection(db, 'customerReviews'),
+      (snapshot) => {
+        const reviews = snapshot.docs.map((doc) => {
+          const data = doc.data();
+
+          return {
+            id: doc.id,
+            name: String(data.name ?? 'Customer'),
+            image: String(data.image ?? ''),
+            rating: Math.max(1, Math.min(5, Number(data.rating ?? 5))),
+            review: String(data.review ?? ''),
+            createdAt: data.createdAt,
+          };
+        });
+
+        // Newest reviews first when createdAt exists.
+        reviews.sort((a, b) => {
+          const aTime =
+            typeof (a.createdAt as { toMillis?: () => number } | undefined)?.toMillis === 'function'
+              ? (a.createdAt as { toMillis: () => number }).toMillis()
+              : 0;
+
+          const bTime =
+            typeof (b.createdAt as { toMillis?: () => number } | undefined)?.toMillis === 'function'
+              ? (b.createdAt as { toMillis: () => number }).toMillis()
+              : 0;
+
+          return bTime - aTime;
+        });
+
+        setCustomerReviews(reviews.filter((item) => item.review.trim()));
+      },
+      (error) => {
+        console.error('Unable to load customer reviews:', error);
+        setCustomerReviews([]);
+      }
+    );
+
+    return () => unsubscribe();
+  }, []);
+
+  const liveReviewItems = customerReviews.map((review) => ({
+    name: review.name,
+    role: 'Customer',
+    image: review.image,
+    quote: review.review,
+    rating: review.rating,
+    isCustomerReview: true,
+  }));
+
+  const marqueeItems = [...testimonials, ...liveReviewItems, ...testimonials, ...liveReviewItems];
 
   return (
     <section className="py-32 bg-transparent relative overflow-hidden">
@@ -87,7 +153,14 @@ export default function Testimonials() {
               
               <div className="flex items-center gap-1 mb-8 relative z-10">
                 {[1, 2, 3, 4, 5].map((star) => (
-                  <Star key={star} className="w-4 h-4 sm:w-5 sm:h-5 fill-[#d91f27] text-[#d91f27]" />
+                  <Star
+                    key={star}
+                    className={`w-4 h-4 sm:w-5 sm:h-5 ${
+                      star <= (test.rating ?? 5)
+                        ? "fill-[#d91f27] text-[#d91f27]"
+                        : "text-white/20"
+                    }`}
+                  />
                 ))}
               </div>
               
@@ -97,18 +170,35 @@ export default function Testimonials() {
               
               <div className="flex items-center gap-4 mt-auto relative z-10 pt-6 border-t border-white/5 group-hover:border-white/10 transition-colors">
                 <div className="w-14 h-14 rounded-full overflow-hidden relative border-2 border-white/10 group-hover:border-[#d91f27]/50 transition-colors shadow-lg">
-                  <Image
-                    src={test.image}
-                    alt={test.name}
-                    fill
-                    sizes="(max-width:768px) 100vw, (max-width:1200px) 50vw, 33vw"
-                    className="object-cover"
-                    referrerPolicy="no-referrer"
-                  />
+                  {test.isCustomerReview ? (
+                    test.image ? (
+                      <img
+                        src={test.image}
+                        alt={test.name}
+                        className="w-full h-full object-cover"
+                        referrerPolicy="no-referrer"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-[#d91f27] flex items-center justify-center text-white font-bold text-lg">
+                        {test.name.charAt(0).toUpperCase()}
+                      </div>
+                    )
+                  ) : (
+                    <Image
+                      src={test.image}
+                      alt={test.name}
+                      fill
+                      sizes="56px"
+                      className="object-cover"
+                      referrerPolicy="no-referrer"
+                    />
+                  )}
                 </div>
                 <div>
                   <h4 className="font-playfair text-lg font-bold text-white group-hover:text-[#d91f27] transition-colors">{test.name}</h4>
-                  <p className="font-jakarta text-xs sm:text-sm text-white/40 uppercase tracking-wider font-semibold mt-1">{test.role}</p>
+                  <p className="font-jakarta text-xs sm:text-sm text-white/40 uppercase tracking-wider font-semibold mt-1">
+                    {test.role}
+                  </p>
                 </div>
               </div>
             </div>
