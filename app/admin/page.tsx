@@ -461,13 +461,15 @@ export default function AdminPage() {
                 }
                 className="w-full bg-[#252525] rounded-xl p-4 outline-none"
               >
-                <option>Salads</option>
-                <option>
-                  Protein Shakes
-                </option>
-                <option>Soups</option>
-                <option>Rolls</option>
-                <option>Eggs</option>
+                <option value="Salads">Salads</option>
+<option value="Protein Shakes">Protein Shakes</option>
+<option value="Soups">Soups</option>
+<option value="Rolls">Rolls</option>
+<option value="Eggs">Eggs</option>
+<option value="Fruit Juices">Fruit Juices</option>
+<option value="Veg Juices">Veg Juices</option>
+<option value="Leafy Juices">Leafy Juices</option>
+<option value="Tea">Tea</option>
               </select>
 
               {/* PRICE */}

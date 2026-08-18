@@ -32,12 +32,17 @@ export default function MenuSection() {
     useState<MenuItem[]>([]);
 
   // Categories
+  // Keep the existing categories and add the new juice/tea sections.
   const categories = [
     "All",
     ...Array.from(
-      new Set(
-        menuItems.map((item) => item.category)
-      )
+      new Set([
+        ...menuItems.map((item) => item.category),
+        "Fruit Juices",
+        "Veg Juices",
+        "Leafy Juices",
+        "Tea",
+      ])
     ),
   ];
 
