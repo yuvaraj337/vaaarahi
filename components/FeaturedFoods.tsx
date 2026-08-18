@@ -32,8 +32,8 @@ const categories = [
       "https://images.unsplash.com/photo-1622484212850-eb596d769edc?auto=format&fit=crop&w=800&q=80",
   },
   {
-    id: "Herbal Tea",
-    title: "Herbal Tea",
+    id: "Tea",
+    title: "Tea",
     items: "18 Items",
     image:
       "https://images.unsplash.com/photo-1544787219-7f47ccb76574?auto=format&fit=crop&w=800&q=80",

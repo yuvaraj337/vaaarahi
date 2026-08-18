@@ -63,7 +63,7 @@ export const restaurantInfo = {
     },
 
     {
-      name: "Herbal Tea",
+      name: "Tea",
       protein: 0,
       calories: 45,
       veg: true,
