@@ -209,7 +209,7 @@ export default function CartDrawer({
                               item.id
                             )
                           }
-                          className="w-10 h-10 shrink-0 rounded-full bg-red-500/10 hover:bg-red-500 active:scale-90 transition flex items-center justify-center ml-1"
+                          className="w-10 h-10 rounded-full bg-red-500/10 hover:bg-red-500 active:scale-90 transition flex items-center justify-center"
                         >
                           <Trash2
                             size={18}
