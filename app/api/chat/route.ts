@@ -32,7 +32,7 @@ If the requested information is not present in the menu data, say:
 "I don't have that information for this item yet."
 
 MENU DATA:
-${JSON.stringify(menusection)}
+${JSON.stringify(menuservice)}
 
 Restaurant Details:
 - Healthy Restaurant
