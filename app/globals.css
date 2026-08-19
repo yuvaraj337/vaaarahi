@@ -814,3 +814,7 @@ body {
     transform: translate3d(0, 0, 0) rotate(360deg);
   }
 }
+/* Hide floating order/info banner while shopping cart is open */
+body.cart-is-open .order-info-banner {
+  display: none !important;
+} 

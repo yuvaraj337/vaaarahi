@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ShoppingCart } from "lucide-react";
 
 import { useCart } from "./CartContext";
@@ -11,13 +11,21 @@ export default function CartButton() {
 
   const { totalItems } = useCart();
 
+  // Tell the rest of the website when the cart is open
+  useEffect(() => {
+    document.body.classList.toggle("cart-is-open", open);
+
+    return () => {
+      document.body.classList.remove("cart-is-open");
+    };
+  }, [open]);
+
   return (
     <>
       <button
-  data-cart-button="true"
-  onClick={() => setOpen(true)}
+        onClick={() => setOpen(true)}
+        className="relative w-12 h-12 rounded-full bg-[#E63946] hover:bg-[#cf2430] transition-all duration-300 flex items-center justify-center"
         aria-label="Open shopping cart"
-        className="relative w-12 h-12 rounded-full bg-[#E63946] hover:bg-[#cf2430] transition-all duration-300 flex items-center justify-center shadow-lg"
       >
         <ShoppingCart className="w-6 h-6 text-white" />
 
