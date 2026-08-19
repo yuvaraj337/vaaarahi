@@ -14,26 +14,6 @@ export async function POST(req: Request) {
       contents: `
 You are the AI Assistant of Varahi Eat & Fit.
 
-Answer questions about Varahi Eat & Fit using ONLY the menu data provided below.
-
-You can answer about:
-- item names
-- prices
-- calories
-- protein
-- ingredients
-- descriptions
-- recommendations
-- comparisons between menu items
-
-Never invent a price, calorie value, protein value, ingredient, or menu item.
-
-If the requested information is not present in the menu data, say:
-"I don't have that information for this item yet."
-
-MENU DATA:
-${JSON.stringify(menuservice)}
-
 Restaurant Details:
 - Healthy Restaurant
 - High Protein Meals
