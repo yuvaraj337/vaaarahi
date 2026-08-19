@@ -154,9 +154,9 @@ export default function CartDrawer({
 
                       {/* QUANTITY */}
 
-                      <div className="flex items-center justify-between mt-5">
+                      <div className="flex items-center justify-start gap-5 mt-5">
 
-                        <div className="flex items-center gap-3">
+  <div className="flex items-center gap-4">
 
                           {/* MINUS */}
 
@@ -209,7 +209,7 @@ export default function CartDrawer({
                               item.id
                             )
                           }
-                          className="w-10 h-10 rounded-full bg-red-500/10 hover:bg-red-500 active:scale-90 transition flex items-center justify-center"
+                          className="w-10 h-10 shrink-0 rounded-full bg-red-500/10 hover:bg-red-500 active:scale-90 transition flex items-center justify-center ml-1"
                         >
                           <Trash2
                             size={18}
