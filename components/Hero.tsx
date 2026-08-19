@@ -540,7 +540,7 @@ export default function Hero() {
         transition={{
           delay: 0.5,
         }}
-        className="absolute right-8 bottom-8 z-50 hidden items-center gap-8 rounded-full border border-white/10 bg-[#0A0A0A]/50 px-8 py-5 shadow-[0_20px_60px_rgba(0,0,0,.55)] backdrop-blur-xl lg:flex"
+        className="absolute right-8 bottom-8 z-30 hidden items-center gap-8 rounded-full border border-white/10 bg-[#0A0A0A]/50 px-8 py-5 shadow-[0_20px_60px_rgba(0,0,0,.55)] backdrop-blur-xl lg:flex"
       >
         {/* Delivery */}
         <div className="flex items-center gap-4">
