@@ -334,10 +334,42 @@ YOUR ANSWER
 ========================
 `;
 
-    const response = await ai.models.generateContent({
-      model: "gemini-flash-latest",
+    let response;
+
+for (let attempt = 1; attempt <= 3; attempt++) {
+  try {
+    response = await ai.models.generateContent({
+      model: "gemini-3.5-flash-lite",
       contents: prompt,
     });
+
+    break;
+  } catch (error: any) {
+    console.error(`Gemini attempt ${attempt} failed:`, error);
+
+    const status = error?.status;
+
+    // Retry only temporary Gemini availability/rate errors
+    if (
+      (status === 503 || status === 429) &&
+      attempt < 3
+    ) {
+      await new Promise((resolve) =>
+        setTimeout(resolve, attempt * 1500)
+      );
+
+      continue;
+    }
+
+    throw error;
+  }
+}
+
+return NextResponse.json({
+  reply:
+    response?.text ||
+    "Sorry, I couldn't generate a response right now.",
+});
 
     return NextResponse.json({
       reply:
