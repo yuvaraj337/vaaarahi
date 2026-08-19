@@ -4,6 +4,7 @@ import { motion } from "motion/react";
 import Image from "next/image";
 import { Clock, Flame, Leaf, Star } from "lucide-react";
 import { useMemo } from "react";
+import RestaurantStatus from "@/components/RestaurantStatus/RestaurantStatus";
 
 export default function Hero() {
   const particles = useMemo(

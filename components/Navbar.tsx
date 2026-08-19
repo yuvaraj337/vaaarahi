@@ -6,6 +6,7 @@ import { Menu, X } from "lucide-react";
 
 import CartButton from "@/components/cart/CartButton";
 import { useCart } from "@/components/cart/CartContext";
+import RestaurantStatus from "@/components/RestaurantStatus/RestaurantStatus";
 
 const navLinks = [
   { name: "Home", href: "#home" },
@@ -180,17 +181,18 @@ export default function Navbar() {
 
             <div className="hidden lg:flex items-center gap-4">
 
-              <CartButton />
+  <RestaurantStatus />
 
-              <button
-                type="button"
-                onClick={handleOrderNow}
-                className="bg-[#E63946] hover:bg-red-600 text-white px-6 py-3 rounded-full font-semibold transition-all duration-300 hover:scale-105"
-              >
-                Order Now
-              </button>
+  <CartButton />
 
-            </div>
+  <button
+    onClick={handleOrderNow}
+    className="bg-[#E63946] hover:bg-red-600 text-white px-6 py-3 rounded-full font-semibold transition-all duration-300 hover:scale-105"
+  >
+    Order Now
+  </button>
+
+</div>
 
             {/* ========================= */}
             {/* MOBILE RIGHT */}
