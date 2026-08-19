@@ -20,6 +20,42 @@ export default function Navbar() {
 
   const { totalItems } = useCart();
 
+  /*
+   * Find the existing CartButton on the page.
+   *
+   * We identify it using the ShoppingCart icon
+   * instead of depending on a data attribute.
+   */
+  const openExistingCart = () => {
+    const buttons = Array.from(
+      document.querySelectorAll("button")
+    ) as HTMLButtonElement[];
+
+    const cartButton = buttons.find((button) => {
+      const shoppingCartIcon = button.querySelector(
+        "svg.lucide-shopping-cart"
+      );
+
+      if (!shoppingCartIcon) {
+        return false;
+      }
+
+      const style = window.getComputedStyle(button);
+      const rect = button.getBoundingClientRect();
+
+      return (
+        style.display !== "none" &&
+        style.visibility !== "hidden" &&
+        rect.width > 0 &&
+        rect.height > 0
+      );
+    });
+
+    if (cartButton) {
+      cartButton.click();
+    }
+  };
+
   const handleOrderNow = () => {
     /*
      * If cart is empty:
@@ -45,43 +81,15 @@ export default function Navbar() {
 
     /*
      * If cart has items:
-     * trigger the existing CartButton.
+     * open the existing CartButton.
      */
-    const cartButtons = Array.from(
-      document.querySelectorAll(
-        '[data-cart-button="true"]'
-      )
-    ) as HTMLButtonElement[];
-
-    /*
-     * Find the visible cart button.
-     * This is important on mobile because there
-     * are separate desktop/mobile cart buttons.
-     */
-    const visibleCartButton = cartButtons.find(
-      (button) => {
-        const style = window.getComputedStyle(button);
-        const rect = button.getBoundingClientRect();
-
-        return (
-          style.display !== "none" &&
-          style.visibility !== "hidden" &&
-          rect.width > 0 &&
-          rect.height > 0
-        );
-      }
-    );
-
-    if (visibleCartButton) {
-      visibleCartButton.click();
-    }
+    openExistingCart();
   };
 
   /*
    * MOBILE ONLY
    *
    * Handles Order Now after closing the mobile menu.
-   * No desktop behavior is changed.
    */
   const handleMobileOrderNow = () => {
     setMobileOpen(false);
@@ -109,36 +117,11 @@ export default function Navbar() {
     /*
      * Cart has items.
      *
-     * Wait until the mobile menu closes, then
-     * find the visible cart button and click it.
+     * Wait until the mobile menu closes,
+     * then open the existing CartButton.
      */
     setTimeout(() => {
-      const cartButtons = Array.from(
-        document.querySelectorAll(
-          '[data-cart-button="true"]'
-        )
-      ) as HTMLButtonElement[];
-
-      const visibleCartButton = cartButtons.find(
-        (button) => {
-          const style =
-            window.getComputedStyle(button);
-
-          const rect =
-            button.getBoundingClientRect();
-
-          return (
-            style.display !== "none" &&
-            style.visibility !== "hidden" &&
-            rect.width > 0 &&
-            rect.height > 0
-          );
-        }
-      );
-
-      if (visibleCartButton) {
-        visibleCartButton.click();
-      }
+      openExistingCart();
     }, 100);
   };
 
@@ -200,6 +183,7 @@ export default function Navbar() {
               <CartButton />
 
               <button
+                type="button"
                 onClick={handleOrderNow}
                 className="bg-[#E63946] hover:bg-red-600 text-white px-6 py-3 rounded-full font-semibold transition-all duration-300 hover:scale-105"
               >
@@ -221,6 +205,7 @@ export default function Navbar() {
 
               {/* HAMBURGER */}
               <button
+                type="button"
                 aria-label="Toggle menu"
                 className="h-11 w-11 rounded-xl border border-white/10 bg-black/30 flex items-center justify-center text-white hover:bg-white/10 transition"
                 onClick={() =>
