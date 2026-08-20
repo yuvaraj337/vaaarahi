@@ -769,10 +769,10 @@ export default function AdminPage() {
     type="button"
     onClick={() => toggleAvailability(food)}
     className={`px-5 py-3 rounded-xl font-semibold transition ${
-      food.available === false
-        ? "bg-green-600 hover:bg-green-700"
-        : "bg-orange-600 hover:bg-orange-700"
-    }`}
+  food.available === false
+    ? "bg-red-600 hover:bg-red-700"
+    : "bg-green-600 hover:bg-green-700"
+}`}
   >
     {food.available === false
       ? "Make Available"

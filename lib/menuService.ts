@@ -23,11 +23,12 @@ export async function getMenu() {
 }
 
 // Add a new food item
-export async function addFood(item: Omit<MenuItem, "id">) {
+export async function addFood(
+  item: Omit<MenuItem, "id">
+) {
   return await addDoc(menuRef, item);
 }
 
-// Update a food item
 // Update a food item
 export async function updateFood(
   id: string,
@@ -42,6 +43,10 @@ export async function updateFood(
 }
 
 // Delete a food item
-export async function deleteFood(id: string) {
-  return await deleteDoc(doc(db, "menu", id));
-} 
+export async function deleteFood(
+  id: string
+) {
+  return await deleteDoc(
+    doc(db, "menu", id)
+  );
+}
