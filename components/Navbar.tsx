@@ -198,7 +198,7 @@ export default function Navbar() {
             {/* MOBILE RIGHT */}
             {/* ========================= */}
 
-            <div className="lg:hidden flex items-center gap-4">
+            <div className="lg:hidden flex items-center gap-7">
 
   {/* STATUS — LEFT OF CART */}
   <RestaurantStatus />
