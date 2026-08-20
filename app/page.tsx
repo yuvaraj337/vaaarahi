@@ -8,11 +8,13 @@ import Testimonials from "@/components/Testimonials";
 import CtaSection from "@/components/CtaSection";
 import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
+import OfferBanner from "@/components/OfferBanner";
 
 export default function Home() {
   return (
     <>
       <Navbar />
+      <OfferBanner />
       <Hero />
       <FeaturedFoods />
       <MenuSection />
