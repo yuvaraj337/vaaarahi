@@ -200,10 +200,13 @@ export default function Navbar() {
 
             <div className="lg:hidden flex items-center gap-3">
 
-              {/* CART — DIRECTLY LEFT OF MENU */}
-              <div className="relative">
-                <CartButton />
-              </div>
+  {/* STATUS — LEFT OF CART */}
+  <RestaurantStatus />
+
+  {/* CART — DIRECTLY LEFT OF MENU */}
+  <div className="relative">
+    <CartButton />
+  </div>
 
               {/* HAMBURGER */}
               <button
@@ -264,7 +267,6 @@ export default function Navbar() {
         </div>
 
       </div>
-      <RestaurantStatus />
     </header>
   );
 }
