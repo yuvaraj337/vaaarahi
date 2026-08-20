@@ -9,6 +9,9 @@ import {
 } from "@/lib/menuService";
 
 import { MenuItem } from "@/types/menu";
+type AdminMenuItem = MenuItem & {
+  available?: boolean;
+};
 
 import { useRouter } from "next/navigation";
 
@@ -31,7 +34,7 @@ import {
 export default function AdminPage() {
   const router = useRouter();
 
-  const [foods, setFoods] = useState<MenuItem[]>([]);
+  const [foods, setFoods] = useState<AdminMenuItem[]>([]);
 
   const [loading, setLoading] = useState(false);
 
@@ -63,19 +66,18 @@ export default function AdminPage() {
   const [deletingReviewId, setDeletingReviewId] =
     useState<string | null>(null);
 
-  const [form, setForm] = useState<MenuItem>({
-    name: "",
-    description: "",
-    category: "Salads",
-    price: 0,
-    image: "",
-    rating: 4.8,
-    calories: 0,
-    protein: "",
-    // Kept internally so the existing MenuItem type
-    // and menu service are not changed.
-    isVegetarian: true,
-  });
+  const [form, setForm] = useState<AdminMenuItem>({
+  name: "",
+  description: "",
+  category: "Salads",
+  price: 0,
+  image: "",
+  rating: 4.8,
+  calories: 0,
+  protein: "",
+  isVegetarian: true,
+  available: true,
+});
 
   async function loadFoods() {
     const data = await getMenu();
@@ -264,16 +266,17 @@ export default function AdminPage() {
       setImageFile(null);
 
       setForm({
-        name: "",
-        description: "",
-        category: "Salads",
-        price: 0,
-        image: "",
-        rating: 4.8,
-        calories: 0,
-        protein: "",
-        isVegetarian: true,
-      });
+  name: "",
+  description: "",
+  category: "Salads",
+  price: 0,
+  image: "",
+  rating: 4.8,
+  calories: 0,
+  protein: "",
+  isVegetarian: true,
+  available: true,
+});
 
     } catch (error) {
       console.error(
@@ -289,7 +292,37 @@ export default function AdminPage() {
       setLoading(false);
     }
   }
+  async function toggleAvailability(food: AdminMenuItem) {
+  if (!food.id) return;
 
+  try {
+    const newAvailability = food.available === false;
+
+    await updateFood(food.id, {
+      available: newAvailability,
+    });
+
+    setFoods((previousFoods) =>
+      previousFoods.map((item) =>
+        item.id === food.id
+          ? {
+              ...item,
+              available: newAvailability,
+            }
+          : item
+      )
+    );
+  } catch (error) {
+    console.error(
+      "Error updating food availability:",
+      error
+    );
+
+    alert(
+      "Failed to update food availability. Please try again."
+    );
+  }
+}
   /* =========================================
      DELETE
   ========================================= */
@@ -355,18 +388,20 @@ export default function AdminPage() {
 
     setImageFile(null);
 
-    setForm({
-      name: food.name,
-      description: food.description,
-      category: food.category,
-      price: food.price,
-      image: food.image,
-      rating: food.rating,
-      calories: food.calories,
-      protein: food.protein,
-      isVegetarian:
-        food.isVegetarian ?? true,
-    });
+   setForm({
+  name: food.name,
+  description: food.description,
+  category: food.category,
+  price: food.price,
+  image: food.image,
+  rating: food.rating,
+  calories: food.calories,
+  protein: food.protein,
+  isVegetarian:
+    food.isVegetarian ?? true,
+  available:
+    food.available !== false,
+});
 
     window.scrollTo({
       top: 0,
@@ -729,30 +764,45 @@ export default function AdminPage() {
 
                     <div className="flex gap-3">
 
-                      <button
-                        onClick={() =>
-                          handleEdit(food)
-                        }
-                        className="bg-blue-600 hover:bg-blue-700 px-5 py-3 rounded-xl font-semibold"
-                      >
-                        Edit
-                      </button>
+  {/* Availability */}
+  <button
+    type="button"
+    onClick={() => toggleAvailability(food)}
+    className={`px-5 py-3 rounded-xl font-semibold transition ${
+      food.available === false
+        ? "bg-green-600 hover:bg-green-700"
+        : "bg-orange-600 hover:bg-orange-700"
+    }`}
+  >
+    {food.available === false
+      ? "Make Available"
+      : "Make Unavailable"}
+  </button>
 
-                      <button
-                        onClick={() => {
-                          if (!food.id)
-                            return;
+  {/* Edit */}
+  <button
+    onClick={() =>
+      handleEdit(food)
+    }
+    className="bg-blue-600 hover:bg-blue-700 px-5 py-3 rounded-xl font-semibold"
+  >
+    Edit
+  </button>
 
-                          handleDelete(
-                            food.id
-                          );
-                        }}
-                        className="bg-red-600 hover:bg-red-700 px-5 py-3 rounded-xl font-semibold"
-                      >
-                        Delete
-                      </button>
+  {/* Delete */}
+  <button
+    onClick={() => {
+      if (!food.id)
+        return;
 
-                    </div>
+      handleDelete(food.id);
+    }}
+    className="bg-red-600 hover:bg-red-700 px-5 py-3 rounded-xl font-semibold"
+  >
+    Delete
+  </button>
+
+</div>
 
                   </div>
 

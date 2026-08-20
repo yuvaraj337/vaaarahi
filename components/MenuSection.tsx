@@ -18,6 +18,9 @@ import { cn } from "@/lib/utils";
 import { useCart } from "@/components/cart/CartContext";
 import { getMenu } from "@/lib/menuService";
 import { MenuItem } from "@/types/menu";
+type MenuItemWithAvailability = MenuItem & {
+  available?: boolean;
+};
 
 export default function MenuSection() {
   const { addToCart } = useCart();
@@ -29,7 +32,7 @@ export default function MenuSection() {
     useState<string[]>([]);
 
   const [menuItems, setMenuItems] =
-    useState<MenuItem[]>([]);
+  useState<MenuItemWithAvailability[]>([]);
 
   // Categories
   // Keep the existing categories and add the new juice/tea sections.
@@ -89,12 +92,18 @@ export default function MenuSection() {
 
   // Filter menu
   const filteredItems = menuItems.filter((item) => {
-    if (activeCategory === "All") {
-      return true;
-    }
+  // Hide only items explicitly marked unavailable.
+  // Old items without the field remain visible.
+  if (item.available === false) {
+    return false;
+  }
 
-    return item.category === activeCategory;
-  });
+  if (activeCategory === "All") {
+    return true;
+  }
+
+  return item.category === activeCategory;
+});
 
   /*
    * Creates a stable numeric ID for the cart.
