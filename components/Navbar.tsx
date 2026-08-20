@@ -200,8 +200,9 @@ export default function Navbar() {
 
             <div className="lg:hidden flex items-center gap-2">
 
-  {/* STATUS — LEFT OF CART */}
+  <div className="translate-y-2">
   <RestaurantStatus />
+</div>
 
   {/* CART — DIRECTLY LEFT OF MENU */}
   <div className="relative">
