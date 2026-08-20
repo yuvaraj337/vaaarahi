@@ -264,6 +264,7 @@ export default function Navbar() {
         </div>
 
       </div>
+      <RestaurantStatus />
     </header>
   );
 }
