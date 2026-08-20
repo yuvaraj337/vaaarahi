@@ -27,7 +27,7 @@ export default function FloatingContact() {
 
         {/* WhatsApp */}
         <a
-          href="https://wa.me/916302094687"
+          href="https://wa.me/919014863642"
           target="_blank"
           rel="noopener noreferrer"
           className="group flex items-center gap-3 rounded-full bg-black/70 backdrop-blur-xl border border-white/10 px-4 py-3 shadow-2xl hover:scale-105 hover:border-green-500 transition-all duration-300"
@@ -43,7 +43,7 @@ export default function FloatingContact() {
 
         {/* Call */}
         <a
-          href="tel:+916302094687"
+          href="tel:+919014863642"
           className="group flex items-center gap-3 rounded-full bg-black/70 backdrop-blur-xl border border-white/10 px-4 py-3 shadow-2xl hover:scale-105 hover:border-[#E63946] transition-all duration-300"
         >
           <div className="w-12 h-12 rounded-full bg-[#E63946] flex items-center justify-center">

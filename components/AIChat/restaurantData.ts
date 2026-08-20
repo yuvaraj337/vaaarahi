@@ -1,7 +1,7 @@
 export const restaurantInfo = {
   name: "Varahi Eat & Fit",
 
-  phone: "+91 6302094687",
+  phone: "+91 9014863642",
 
   payment: [
     "Cash On Delivery",

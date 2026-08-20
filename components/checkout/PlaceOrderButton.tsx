@@ -268,7 +268,7 @@ Thank you for ordering from *Varahi Eat & Fit* ❤️`;
     ======================================== */
 
     const whatsappUrl =
-      `https://wa.me/916302094687?text=` +
+      `https://wa.me/919014863642?text=` +
       encodeURIComponent(message);
 
     /* ========================================
