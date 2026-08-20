@@ -93,22 +93,24 @@ export default function RestaurantStatus({
   return (
     <div
       className={`
-        inline-flex
-        items-center
-        gap-2
-        rounded-full
-        border
-        px-3
-        py-2
-        backdrop-blur-xl
-        shadow-lg
-        ${config.className}
-        ${className}
-      `}
+  inline-flex
+  items-center
+  gap-1.5
+  rounded-full
+  border
+  px-2.5
+  py-1.5
+  sm:px-3
+  sm:py-2
+  backdrop-blur-xl
+  shadow-lg
+  ${config.className}
+  ${className}
+`}
     >
-      <Icon className="h-4 w-4 shrink-0" />
+      <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
 
-      <span className="text-[9px] sm:text-[10px] font-bold tracking-[0.15em] whitespace-nowrap">
+      <span className="text-[8px] sm:text-[10px] font-bold tracking-[0.1em] sm:tracking-[0.15em] whitespace-nowrap">
         {config.label}
       </span>
     </div>
