@@ -381,7 +381,7 @@ export default function AdminPage() {
      EDIT
   ========================================= */
 
-  function handleEdit(food: MenuItem) {
+  function handleEdit(food: AdminMenuItem) {
     if (!food.id) return;
 
     setEditingId(food.id);

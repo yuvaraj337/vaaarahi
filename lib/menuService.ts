@@ -28,11 +28,17 @@ export async function addFood(item: Omit<MenuItem, "id">) {
 }
 
 // Update a food item
+// Update a food item
 export async function updateFood(
   id: string,
-  item: Partial<MenuItem>
+  data: Partial<MenuItem> & {
+    available?: boolean;
+  }
 ) {
-  return await updateDoc(doc(db, "menu", id), item);
+  return await updateDoc(
+    doc(db, "menu", id),
+    data
+  );
 }
 
 // Delete a food item
